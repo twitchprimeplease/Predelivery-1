@@ -9,6 +9,7 @@ let ballSize = 20;
 let baseController = 0;
 let posY = 0
 let velY = 2;
+let pieces = [];
 
 function setup() {
     frameRate(60);
@@ -22,7 +23,9 @@ function setup() {
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
     baseController = windowHeight / 2;
+    pieces.push(new Piece());
     background(0);
+
 }
 
 function draw() {
@@ -31,11 +34,27 @@ function draw() {
     fill(255);
     ellipse(controllerX, controllerY, ballSize, ballSize);
     rect(baseController,windowHeight -(windowHeight / 10), 200, 50);
-    posY += velY
+    //posY += velY
     if(posY <=windowHeight){
         ellipse(windowWidth / 2,posY, ballSize, ballSize);
     }
 
+    pieces.forEach(element => {
+        element.show();
+        //element.move();
+    });
+
+
+    
+    
+
+}
+
+function mousePressed(){
+    pieces.forEach(element => {
+        console.log(element.getX());
+    });
+    
 }
 
 function mouseDragged() {
@@ -52,6 +71,69 @@ function newCursor(x, y,color) {
     ellipse(x, y, 10, 10);
 }
 
+function pieceGenerator(piece){ //funcion para generar piezas 
+    switch(piece){
+        case 1:
+            pieces.push(new HeadPiece())
+            break;
+        case 2:
+            piece.push(new ChestPiece)
+            break;
+        case 3:
+            pieces.push(new Legspiece)
+            break;
+    }
+}
+
+class Piece {
+    constructor(){
+        this.x = random(0,windowWidth);
+        this.y = 0;
+        this.vel = 1;
+    }
+
+    show(){
+        //console.log(this.x);
+        fill(255,255,0);
+        rect(this.x, this.y, 70, 20);
+    }
+    
+    move(){
+        this.y += this.vel
+    }
+
+    getX(){ return this.x}
+
+    getY(){ return this.y}
+}
+
+class HeadPiece extends Piece {
+
+    show(){
+        console.log(this.x);
+        fill(255,0,0);
+        rect(this.x, this.y, 200, 200);
+    }
+}
+
+class ChestPiece extends Piece {
+
+    show(){
+        console.log(this.x);
+        fill(0,255,0);
+        rect(this.x, this.y, 200, 200);
+    }
+}
+
+class Legspiece extends Piece {
+
+    show(){
+        console.log(this.x);
+        fill(0,0,255);
+        rect(this.x, this.y, 200, 200);
+    }
+}
+
 socket.on('mupi-instructions', instructions => {
     console.log('ID: ' + socket.id);
 
@@ -59,9 +141,6 @@ socket.on('mupi-instructions', instructions => {
     switch (interactions) {
         case 0:
             let { pmouseX } = instructions;
-            // controllerX = (pmouseX * mupiWidth) / deviceWidth;
-            // controllerY = (pmouseY * mupiHeight) / deviceHeight;
-            // console.log({ controllerX, controllerY });
             baseController = (pmouseX * mupiWidth) / deviceWidth
             break;
         case 1:
@@ -73,14 +152,7 @@ socket.on('mupi-instructions', instructions => {
             controllerY = (rotationX * mupiHeight) / 90;
             controllerX = (rotationY * mupiWidth) / 90;
             break;
-            // case 3:
-            //     let { pbaseX } = instructions;
-            //     baseController = (pbaseX * mupiWidth) / deviceWidth;
-            //     console.log({ pbaseX });
-            //     console.log("pasa")
-            //     break;
     }
-
 
 });
 
