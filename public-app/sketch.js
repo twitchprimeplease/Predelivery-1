@@ -3,8 +3,9 @@ console.log('Server IP: ', NGROK);
 let socket = io(NGROK, { path: '/real-time' });
 
 let controllerX, controllerY = 0;
-let interactions = 2;
+let interactions = 0;
 let isTouched = false;
+let baseController = 0;
 
 function setup() {
     frameRate(60);
@@ -15,6 +16,7 @@ function setup() {
     canvas.style('right', '0');
     controllerX = windowWidth / 2;
     controllerY = windowHeight / 2;
+    baseController = windowHeight / 2;
     background(0);
     angleMode(DEGREES);
 

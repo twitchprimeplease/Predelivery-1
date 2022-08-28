@@ -6,6 +6,9 @@ let controllerX, controllerY = 0;
 let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
 let ballSize = 20;
+let baseController = 0;
+let posY = 0
+let velY = 2;
 
 function setup() {
     frameRate(60);
@@ -18,14 +21,20 @@ function setup() {
     controllerY = windowHeight / 2;
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
+    baseController = windowHeight / 2;
     background(0);
 }
 
 function draw() {
     background(0, 5);
-    newCursor(pmouseX, pmouseY);
+    newCursor(pmouseX, pmouseY,255);
     fill(255);
     ellipse(controllerX, controllerY, ballSize, ballSize);
+    rect(baseController,windowHeight -(windowHeight / 10), 200, 50);
+    posY += velY
+    if(posY <=windowHeight){
+        ellipse(windowWidth / 2,posY, ballSize, ballSize);
+    }
 
 }
 
@@ -37,9 +46,9 @@ function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
 
-function newCursor(x, y) {
+function newCursor(x, y,color) {
     noStroke();
-    fill(255);
+    fill(color);
     ellipse(x, y, 10, 10);
 }
 
@@ -49,10 +58,11 @@ socket.on('mupi-instructions', instructions => {
     let { interactions } = instructions;
     switch (interactions) {
         case 0:
-            let { pmouseX, pmouseY } = instructions;
-            controllerX = (pmouseX * mupiWidth) / deviceWidth;
-            controllerY = (pmouseY * mupiHeight) / deviceHeight;
-            console.log({ controllerX, controllerY });
+            let { pmouseX } = instructions;
+            // controllerX = (pmouseX * mupiWidth) / deviceWidth;
+            // controllerY = (pmouseY * mupiHeight) / deviceHeight;
+            // console.log({ controllerX, controllerY });
+            baseController = (pmouseX * mupiWidth) / deviceWidth
             break;
         case 1:
             let { pAccelerationX, pAccelerationY, pAccelerationZ } = instructions;
@@ -63,9 +73,12 @@ socket.on('mupi-instructions', instructions => {
             controllerY = (rotationX * mupiHeight) / 90;
             controllerX = (rotationY * mupiWidth) / 90;
             break;
-        case 3:
-            
-            break;
+            // case 3:
+            //     let { pbaseX } = instructions;
+            //     baseController = (pbaseX * mupiWidth) / deviceWidth;
+            //     console.log({ pbaseX });
+            //     console.log("pasa")
+            //     break;
     }
 
 

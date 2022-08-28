@@ -1,10 +1,10 @@
 const express = require('express');
 const { Server } = require('socket.io');
 const PORT = 5050; // No cambiar, tienes que ponerlo en ngrok también
-const SERVER_IP = '172.30.114.117'; // Cambiar por la IP del computador, tu comando es ifconfig en0
+const SERVER_IP = '192.168.68.105'; // Cambiar por la IP del computador, tu comando es ifconfig en0
 
-const os = require('os');
-const IPaddress = os.networkInterfaces().en0[1].address;
+// const os = require('os');
+// const IPaddress = os.networkInterfaces().en0[1].address;
 
 const app = express();
 app.use(express.json());
