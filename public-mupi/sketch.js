@@ -7,9 +7,12 @@ let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
 let ballSize = 20;
 let baseController = 0;
-let posY = 0
+let posY = 0;
 let velY = 2;
 let pieces = [];
+let validateComplete = false;
+let heightController = 0;
+let pHeightController = 0;
 
 function setup() {
     frameRate(60);
@@ -22,18 +25,20 @@ function setup() {
     controllerY = windowHeight / 2;
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
-    baseController = windowHeight / 2;
-    pieces.push(new Piece());
+    baseController = (windowHeight / 2) + 200;
+    heightController = windowHeight - (windowHeight / 10);
+    pHeightController = heightController
     background(0);
+    startPiece();
 
 }
 
 function draw() {
     background(0, 5);
     newCursor(pmouseX, pmouseY,255);
-    fill(255);
+    fill(255, 0, 0);
     ellipse(controllerX, controllerY, ballSize, ballSize);
-    rect(baseController,windowHeight -(windowHeight / 10), 200, 50);
+    rect(baseController, heightController, 200, 50);
     //posY += velY
     if(posY <=windowHeight){
         ellipse(windowWidth / 2,posY, ballSize, ballSize);
@@ -41,7 +46,7 @@ function draw() {
 
     pieces.forEach(element => {
         element.show();
-        //element.move();
+        element.move();
     });
 
 
@@ -90,6 +95,7 @@ class Piece {
         this.x = random(0,windowWidth);
         this.y = 0;
         this.vel = 1;
+        this.collision = false; 
     }
 
     show(){
@@ -99,7 +105,20 @@ class Piece {
     }
     
     move(){
-        this.y += this.vel
+        //console.log(dist(this.y, this.x, heightController, this.x));
+        if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
+            if (dist(this.y, this.x, this.y, baseController)<=200) {
+                this.collision = true;
+                pHeightController = pHeightController - 20;
+            }
+        }
+        if (this.collision == false){
+            this.y += this.vel;
+        }else{
+            this.x = baseController + 65;
+        }
+
+        
     }
 
     getX(){ return this.x}
@@ -162,3 +181,18 @@ socket.on('mupi-size', deviceSize => {
     deviceHeight = windowHeight;
     console.log(`User is using a smartphone size of ${deviceWidth} and ${deviceHeight}`);
 });
+
+//esperar temporalmente 
+function sleep(millisecondsDuration)
+{
+  return new Promise((resolve) => {
+    setTimeout(resolve, millisecondsDuration);
+  })
+}
+
+function startPiece() {
+    pieces.push(new Piece());
+    sleep(3000).then(function() {
+        startPiece();
+    })
+}
