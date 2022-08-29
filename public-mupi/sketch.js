@@ -15,6 +15,9 @@ let heightController = 0;
 let pHeightController = 0;
 let baseWeight = 200;
 let baseHeight = 50;
+let isHead = false;
+let isBody = false;
+let isLeg = false;
 
 function setup() {
     frameRate(60);
@@ -31,7 +34,6 @@ function setup() {
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController
     background(0);
-    //startPiece();
     pieceGenerator()
 
 }
@@ -46,11 +48,17 @@ function draw() {
         ellipse(windowWidth / 2,posY, ballSize, ballSize);
     }
 
-    pieces.forEach(element => {
+    pieces.forEach((element, i) => {
         element.show();
         element.move();
+
+        if(element.getY() >=windowHeight){
+            pieces.splice(i, 1);
+
+        }
     });
 
+    //console.log(pieces.length)
 }
 
 function mousePressed(){
@@ -101,30 +109,82 @@ class Piece {
         this.y = 0;
         this.vel = 1;
         this.collision = false; 
-        this.colSelctor = Math.floor(random(1,4))
+        const rancolor = Math.floor(random(1,4))
+        this.colSelctor = rancolor
+        this.id = "generic";
     }
 
     show(){
-        // switch(this.colSelctor){
-        //     case 1:
-                
-        //         break;
-        //     case 2:
-        //         break;
-        //     case 3:
-        //         break;
-        // }
-        fill(255,255,0);
+        switch(this.colSelctor){
+            case 1:
+                fill(255,255,0);
+                break;
+            case 2:
+                fill(206,71,96)
+                break;
+            case 3:
+                fill(107,15,26)
+                break;
+        }
+        
         rect(this.x, this.y, 70, 20);
     }
-    
+
+    // po(){ 
+    //     if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
+    //         if (dist(this.y, this.x, this.y, baseController)<=200) {
+    //             if(this.id.equals("Head")) {
+    //                 isHead = true;
+    //             } if (this.id.equals("Chest")){
+    //                 isBody = true;
+    //             } if (this.id.equals("Legs")){
+    //                 isLeg = true;
+    //             } 
+    //             if (isHead != true){
+    //                 this.collision = true;
+    //             pHeightController = pHeightController - 20;
+    //             }
+    //             if(isBody != true){
+    //                 this.collision = true;
+    //             pHeightController = pHeightController - 20;
+    //             }
+    //             if (isLeg != true){
+    //                 this.collision = true;
+    //                 pHeightController = pHeightController - 20;
+    //             }
+                
+    //         }
+    //     }
+    // }
+
     move(){
+
         if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
             if (dist(this.y, this.x, this.y, baseController)<=200) {
-                this.collision = true;
+                if(this.id =="Head") {
+                    isHead = true;
+                    console.log(isHead);
+                } if (this.id =="Chest"){
+                    isBody = true;
+                } if (this.id =="Legs"){
+                    isLeg = true;
+                } 
+                if (isHead === false){
+                    this.collision = true;
+                pHeightController = pHeightController - 20; //3215876321 monitora Natalia
+                }
+                if(isBody != true){
+                    this.collision = true;
                 pHeightController = pHeightController - 20;
+                }
+                if (isLeg != true){
+                    this.collision = true;
+                    pHeightController = pHeightController - 20;
+                }
+                
             }
         }
+
         if (this.collision == false){
             this.y += this.vel;
         }else{
@@ -141,24 +201,70 @@ class Piece {
 
 class HeadPiece extends Piece {
 
+    constructor(){ 
+        super();
+        this.id = "Head";
+    }
+
     show(){
-        fill(255,0,0);
+        switch(this.colSelctor){
+            case 1:
+                fill(255,0,0);
+                break;
+            case 2:
+                fill(206,71,96)
+                break;
+            case 3:
+                fill(107,15,26)
+                break;
+        }
+        
         rect(this.x, this.y, 70, 20);
     }
 }
 
 class ChestPiece extends Piece {
 
+    constructor(){ 
+        super();
+        this.id = "Chest";
+    }
     show(){
-        fill(0,255,0);
+        switch(this.colSelctor){
+            case 1:
+                fill(0,255,0);
+                break;
+            case 2:
+                fill(144,227,154)
+                break;
+            case 3:
+                fill(28,254,186)
+                break;
+        }
+        
         rect(this.x, this.y, 70, 20);
     }
 }
 
 class Legspiece extends Piece {
 
+    constructor(){ 
+        super();
+        this.id = "Legs";
+    }
     show(){
-        fill(0,0,255);
+        switch(this.colSelctor){
+            case 1:
+                fill(0,0,255);
+                break;
+            case 2:
+                fill(95,10,135)
+                break;
+            case 3:
+                fill(161,181,216)
+                break;
+        }
+        
         rect(this.x, this.y, 70, 20);
     }
 }
