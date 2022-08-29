@@ -13,6 +13,8 @@ let pieces = [];
 let validateComplete = false;
 let heightController = 0;
 let pHeightController = 0;
+let baseWeight = 200;
+let baseHeight = 50;
 
 function setup() {
     frameRate(60);
@@ -25,11 +27,12 @@ function setup() {
     controllerY = windowHeight / 2;
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
-    baseController = (windowHeight / 2) + 200;
+    baseController = (windowHeight / 2) + baseWeight;
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController
     background(0);
-    startPiece();
+    //startPiece();
+    pieceGenerator()
 
 }
 
@@ -39,7 +42,6 @@ function draw() {
     fill(255, 0, 0);
     ellipse(controllerX, controllerY, ballSize, ballSize);
     rect(baseController, heightController, 200, 50);
-    //posY += velY
     if(posY <=windowHeight){
         ellipse(windowWidth / 2,posY, ballSize, ballSize);
     }
@@ -48,10 +50,6 @@ function draw() {
         element.show();
         element.move();
     });
-
-
-    
-    
 
 }
 
@@ -76,18 +74,25 @@ function newCursor(x, y,color) {
     ellipse(x, y, 10, 10);
 }
 
-function pieceGenerator(piece){ //funcion para generar piezas 
+function pieceGenerator(){ //funcion para generar piezas 
+    let piece = Math.floor(random(1,4));
     switch(piece){
         case 1:
             pieces.push(new HeadPiece())
             break;
         case 2:
-            piece.push(new ChestPiece)
+            pieces.push(new ChestPiece())
             break;
         case 3:
-            pieces.push(new Legspiece)
+            pieces.push(new Legspiece())
+            break;
+        case 4:
             break;
     }
+
+    sleep(3000).then(function() {
+        pieceGenerator();
+    })
 }
 
 class Piece {
@@ -96,16 +101,24 @@ class Piece {
         this.y = 0;
         this.vel = 1;
         this.collision = false; 
+        this.colSelctor = Math.floor(random(1,4))
     }
 
     show(){
-        //console.log(this.x);
+        // switch(this.colSelctor){
+        //     case 1:
+                
+        //         break;
+        //     case 2:
+        //         break;
+        //     case 3:
+        //         break;
+        // }
         fill(255,255,0);
         rect(this.x, this.y, 70, 20);
     }
     
     move(){
-        //console.log(dist(this.y, this.x, heightController, this.x));
         if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
             if (dist(this.y, this.x, this.y, baseController)<=200) {
                 this.collision = true;
@@ -129,28 +142,40 @@ class Piece {
 class HeadPiece extends Piece {
 
     show(){
-        console.log(this.x);
         fill(255,0,0);
-        rect(this.x, this.y, 200, 200);
+        rect(this.x, this.y, 70, 20);
     }
 }
 
 class ChestPiece extends Piece {
 
     show(){
-        console.log(this.x);
         fill(0,255,0);
-        rect(this.x, this.y, 200, 200);
+        rect(this.x, this.y, 70, 20);
     }
 }
 
 class Legspiece extends Piece {
 
     show(){
-        console.log(this.x);
         fill(0,0,255);
-        rect(this.x, this.y, 200, 200);
+        rect(this.x, this.y, 70, 20);
     }
+}
+
+//esperar temporalmente 
+function sleep(millisecondsDuration)
+{
+    return new Promise((resolve) => {
+    setTimeout(resolve, millisecondsDuration);
+    })
+}
+
+function startPiece() {
+    pieces.push(new HeadPiece());
+    sleep(3000).then(function() {
+        startPiece();
+    })
 }
 
 socket.on('mupi-instructions', instructions => {
@@ -162,15 +187,15 @@ socket.on('mupi-instructions', instructions => {
             let { pmouseX } = instructions;
             baseController = (pmouseX * mupiWidth) / deviceWidth
             break;
-        case 1:
-            let { pAccelerationX, pAccelerationY, pAccelerationZ } = instructions;
-            ballSize = pAccelerationY < 0 ? pAccelerationY * -2 : pAccelerationY * 2;
-            break;
-        case 2:
-            let { rotationX, rotationY, rotationZ } = instructions;
-            controllerY = (rotationX * mupiHeight) / 90;
-            controllerX = (rotationY * mupiWidth) / 90;
-            break;
+        // case 1:
+        //     let { pAccelerationX, pAccelerationY, pAccelerationZ } = instructions;
+        //     ballSize = pAccelerationY < 0 ? pAccelerationY * -2 : pAccelerationY * 2;
+        //     break;
+        // case 2:
+        //     let { rotationX, rotationY, rotationZ } = instructions;
+        //     controllerY = (rotationX * mupiHeight) / 90;
+        //     controllerX = (rotationY * mupiWidth) / 90;
+        //     break;
     }
 
 });
@@ -181,18 +206,3 @@ socket.on('mupi-size', deviceSize => {
     deviceHeight = windowHeight;
     console.log(`User is using a smartphone size of ${deviceWidth} and ${deviceHeight}`);
 });
-
-//esperar temporalmente 
-function sleep(millisecondsDuration)
-{
-  return new Promise((resolve) => {
-    setTimeout(resolve, millisecondsDuration);
-  })
-}
-
-function startPiece() {
-    pieces.push(new Piece());
-    sleep(3000).then(function() {
-        startPiece();
-    })
-}
