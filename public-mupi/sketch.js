@@ -34,6 +34,7 @@ function setup() {
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController
     background(0);
+    //pieces.push(new HeadPiece())
     pieceGenerator()
 
 }
@@ -65,6 +66,7 @@ function mousePressed(){
     pieces.forEach(element => {
         console.log(element.getX());
     });
+    pieces.push(new HeadPiece())
     
 }
 
@@ -112,6 +114,7 @@ class Piece {
         const rancolor = Math.floor(random(1,4))
         this.colSelctor = rancolor
         this.id = "generic";
+        this.isStacked = false;
     }
 
     show(){
@@ -130,66 +133,50 @@ class Piece {
         rect(this.x, this.y, 70, 20);
     }
 
-    // po(){ 
-    //     if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
-    //         if (dist(this.y, this.x, this.y, baseController)<=200) {
-    //             if(this.id.equals("Head")) {
-    //                 isHead = true;
-    //             } if (this.id.equals("Chest")){
-    //                 isBody = true;
-    //             } if (this.id.equals("Legs")){
-    //                 isLeg = true;
-    //             } 
-    //             if (isHead != true){
-    //                 this.collision = true;
-    //             pHeightController = pHeightController - 20;
-    //             }
-    //             if(isBody != true){
-    //                 this.collision = true;
-    //             pHeightController = pHeightController - 20;
-    //             }
-    //             if (isLeg != true){
-    //                 this.collision = true;
-    //                 pHeightController = pHeightController - 20;
-    //             }
-                
-    //         }
-    //     }
-    // }
 
     move(){
 
         if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
             if (dist(this.y, this.x, this.y, baseController)<=200) {
-                if(this.id =="Head") {
+                
+
+                if(this.id =="Head"&&isHead === false && isBody === true) {
                     isHead = true;
-                    console.log(isHead);
-                } if (this.id =="Chest"){
+                    this.collision = true;
+                    pHeightController = pHeightController - 20;
+                } else if (this.id =="Chest"&&isBody === false && isLeg === true){
                     isBody = true;
-                } if (this.id =="Legs"){
+                    this.collision = true;
+                    pHeightController = pHeightController - 20;
+                } else if (this.id =="Legs"&&isLeg === false){
                     isLeg = true;
-                } 
-                if (isHead === false){
-                    this.collision = true;
-                pHeightController = pHeightController - 20; //3215876321 monitora Natalia
-                }
-                if(isBody != true){
-                    this.collision = true;
-                pHeightController = pHeightController - 20;
-                }
-                if (isLeg != true){
                     this.collision = true;
                     pHeightController = pHeightController - 20;
                 }
+            
                 
             }
         }
 
         if (this.collision == false){
             this.y += this.vel;
-        }else{
+        }else {
+
+            if(this.id =="Head"&&isHead === true) {
+                this.isStacked = true;
+            } else if (this.id =="Chest"&&isBody === true){
+                this.isStacked = true;
+            } else if (this.id =="Legs"&&isLeg === true){
+                this.isStacked = true;
+            } 
+            
+        }
+
+        if(this.isStacked){
             this.x = baseController + 65;
         }
+
+
 
         
     }
@@ -218,7 +205,7 @@ class HeadPiece extends Piece {
                 fill(107,15,26)
                 break;
         }
-        
+        fill(255,0,0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -241,7 +228,7 @@ class ChestPiece extends Piece {
                 fill(28,254,186)
                 break;
         }
-        
+        fill(0,255,0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -264,7 +251,7 @@ class Legspiece extends Piece {
                 fill(161,181,216)
                 break;
         }
-        
+        fill(0,0,255);
         rect(this.x, this.y, 70, 20);
     }
 }
