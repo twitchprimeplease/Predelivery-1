@@ -10,7 +10,6 @@ let baseController = 0;
 let posY = 0;
 let velY = 2;
 let pieces = [];
-let validateComplete = false;
 let heightController = 0;
 let pHeightController = 0;
 let baseWeight = 200;
@@ -33,33 +32,24 @@ function setup() {
     baseController = (windowHeight / 2) + baseWeight;
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController
-    background(0);
-    //pieces.push(new HeadPiece())
+    background(255);
     pieceGenerator()
 
 }
 
 function draw() {
-    background(0, 5);
+    background(255);
     newCursor(pmouseX, pmouseY,255);
-    fill(255, 0, 0);
-    ellipse(controllerX, controllerY, ballSize, ballSize);
+    fill(0);
     rect(baseController, heightController, 200, 50);
-    if(posY <=windowHeight){
-        ellipse(windowWidth / 2,posY, ballSize, ballSize);
-    }
-
     pieces.forEach((element, i) => {
         element.show();
         element.move();
-
         if(element.getY() >=windowHeight){
             pieces.splice(i, 1);
 
         }
     });
-
-    //console.log(pieces.length)
 }
 
 function mousePressed(){
@@ -100,7 +90,7 @@ function pieceGenerator(){ //funcion para generar piezas
             break;
     }
 
-    sleep(3000).then(function() {
+    sleep(2500).then(function() {
         pieceGenerator();
     })
 }
@@ -109,12 +99,12 @@ class Piece {
     constructor(){
         this.x = random(0,windowWidth);
         this.y = 0;
-        this.vel = 1;
+        this.vel = 3;
         this.collision = false; 
         const rancolor = Math.floor(random(1,4))
         this.colSelctor = rancolor
         this.id = "generic";
-        this.isStacked = false;
+
     }
 
     show(){
@@ -129,7 +119,6 @@ class Piece {
                 fill(107,15,26)
                 break;
         }
-        
         rect(this.x, this.y, 70, 20);
     }
 
@@ -138,7 +127,6 @@ class Piece {
 
         if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
             if (dist(this.y, this.x, this.y, baseController)<=200) {
-                
 
                 if(this.id =="Head"&&isHead === false && isBody === true) {
                     isHead = true;
@@ -153,32 +141,14 @@ class Piece {
                     this.collision = true;
                     pHeightController = pHeightController - 20;
                 }
-            
-                
             }
         }
 
         if (this.collision == false){
             this.y += this.vel;
         }else {
-
-            if(this.id =="Head"&&isHead === true) {
-                this.isStacked = true;
-            } else if (this.id =="Chest"&&isBody === true){
-                this.isStacked = true;
-            } else if (this.id =="Legs"&&isLeg === true){
-                this.isStacked = true;
-            } 
-            
+            this.x = baseController + 65;  
         }
-
-        if(this.isStacked){
-            this.x = baseController + 65;
-        }
-
-
-
-        
     }
 
     getX(){ return this.x}
@@ -205,7 +175,7 @@ class HeadPiece extends Piece {
                 fill(107,15,26)
                 break;
         }
-        fill(255,0,0);
+        //fill(255,0,0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -228,7 +198,7 @@ class ChestPiece extends Piece {
                 fill(28,254,186)
                 break;
         }
-        fill(0,255,0);
+        //fill(0,255,0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -251,7 +221,7 @@ class Legspiece extends Piece {
                 fill(161,181,216)
                 break;
         }
-        fill(0,0,255);
+        //fill(0,0,255);
         rect(this.x, this.y, 70, 20);
     }
 }
