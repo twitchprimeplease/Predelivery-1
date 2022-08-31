@@ -1,3 +1,4 @@
+//import ImageManager from "./ImagesManager";
 const NGROK = `https://${window.location.hostname}`;
 let socket = io(NGROK, { path: '/real-time' });
 console.log('Server IP: ', NGROK);
@@ -17,6 +18,11 @@ let isBody = false;
 let isLeg = false;
 
 let toReset = null;
+let bombImage = ''
+
+function preload(){
+    bombImage = loadImage('./Images/img_bomb2.webp')
+}
 
 function setup() {
     frameRate(60);
@@ -34,7 +40,7 @@ function setup() {
     pHeightController = heightController;
     background(255);
     pieceGenerator();
-
+    bombGenerator();
 }
 
 function draw() {
@@ -53,18 +59,18 @@ function draw() {
         }
         if (toReset) {
             resetPieces()
-
             sleep(1000).then(function() {
                 toReset = false;
             });
         };
     });
+
+    image(bombImage, 100, 100);
+
 }
 
 function mousePressed(){
-    
     console.log(toReset);
-    
 }
 
 function mouseDragged() {
@@ -82,7 +88,7 @@ function newCursor(x, y,color) {
 }
 
 function pieceGenerator(){ //funcion para generar piezas 
-    let piece = Math.floor(random(1,5));
+    let piece = Math.floor(random(1,4));
     switch(piece){
         case 1:
             pieces.push(new HeadPiece())
@@ -93,18 +99,24 @@ function pieceGenerator(){ //funcion para generar piezas
         case 3:
             pieces.push(new Legspiece())
             break;
-        case 4:
-            pieces.push(new BombPiece())
-            break;
+
     }
 
     sleep(2500).then(function() {
         pieceGenerator();
     })
 }
+function bombGenerator(){ //funcion para generar piezas 
+
+            pieces.push(new BombPiece());
+
+    sleep(2000).then(function() {
+        bombGenerator();
+    })
+}
 
 class Piece {
-    constructor(){
+    constructor(image){
         this.x = random(0,windowWidth-200);
         this.y = 0;
         this.vel = 3;
@@ -113,6 +125,7 @@ class Piece {
         this.colSelctor = rancolor
         this.id = "generic";
         this.isStacked = false;
+        this.image = image
 
     }
 
@@ -249,11 +262,11 @@ class BombPiece extends Piece {
     constructor(){ 
         super();
         this.id = "Bomb";
-        this.vel = 5;
+        this.vel = 6;
     }
 
     show(){ 
-        fill(0)
+        fill(0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -284,6 +297,7 @@ function resetPieces() {
             isLeg = false;
             pHeightController = heightController;
 }
+
 socket.on('mupi-instructions', instructions => {
     console.log('ID: ' + socket.id);
 
@@ -304,8 +318,9 @@ socket.on('mupi-size', deviceSize => {
     console.log(`User is using a smartphone size of ${deviceWidth} and ${deviceHeight}`);
 });
 
-socket.on('mupi-reset', reset => {
-
-    toReset = true;
+socket.on('mupi-reset', message => {
+    const {resetInfo} = message;
+    toReset = resetInfo ;
+    console.log(toReset);
 
 });

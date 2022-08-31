@@ -28,9 +28,9 @@ function setup() {
 	// });
 
     let resetButton = createButton("Restart your lego!");
-    resetButton.mousePressed(function(){
+    resetButton.mousePressed(() => {
 
-        socket.emit('mobile-reset', { reset: true });
+        socket.emit('mobile-reset', { resetInfo: true });
         background(255);
     });
 

@@ -31,9 +31,9 @@ io.on('connection', socket => {
         socket.broadcast.emit('mupi-instructions', instructions);
     })
 
-    socket.on('mobile-reset', reset => {
-        
-        socket.broadcast.emit('mupi-reset', reset);
+    socket.on('mobile-reset', resetInfo => {
+        socket.broadcast.emit('mupi-reset', resetInfo);
+        console.log(resetInfo , "a");
     })
 });
 
