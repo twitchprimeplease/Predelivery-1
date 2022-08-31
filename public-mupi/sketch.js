@@ -20,8 +20,12 @@ let isLeg = false;
 let toReset = null;
 let bombImage = ''
 
+let screenController = 'StartScreen';
+let generator = true;
+
+
 function preload(){
-    bombImage = loadImage('./Images/img_bomb2.webp')
+    bombImage = loadImage('./Images/img_bomb.png')
 }
 
 function setup() {
@@ -39,16 +43,27 @@ function setup() {
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController;
     background(255);
-    pieceGenerator();
-    bombGenerator();
+    
+    
 }
 
 function draw() {
     background(255);
     newCursor(pmouseX, pmouseY,255);
-    fill(0);
-    rect(baseController, heightController, 200, 50);
-    pieces.forEach((element, i) => {
+    switch (screenController){
+        case 'StartScreen':
+            fill(0)
+            text('Hola',100,100);
+            break;
+        case 'InstructionsScreen':
+
+            text('Instructions',windowWidth/2,windowHeight / 2)
+            break;
+        case 'PlayScreen':
+            playTheGame()
+            fill(0);
+        rect(baseController, heightController, 200, 50);
+        pieces.forEach((element, i) => {
         element.show();
         element.move();
         if(element.getY() >=windowHeight){
@@ -64,13 +79,35 @@ function draw() {
             });
         };
     });
+            break;
+        case 'EndGameScreen':
+            text('Congrats! This is your lego!',windowWidth/2,windowHeight / 2);
+            let yourLego = [];
+            pieces.forEach((element, i) => {
+                if(element.getIsStacked() != true){
+                    pieces.splice(i, 1);
+                } else if (element.getIsStacked() === true){
+                    yourLego.push(element);
+                }
+                
+            });
+            //console.log(yourLego)
+            break;
 
-    image(bombImage, 100, 100);
+        case 'GoodbyeScreen':
+            text('Thanks for Playing! Have a good day!')
+            break;
+            
+    }
+    
+
+    //image(bombImage, 100, 100);
 
 }
 
 function mousePressed(){
-    console.log(toReset);
+    //console.log(toReset);
+    screenController = 'EndGameScreen';
 }
 
 function mouseDragged() {
@@ -116,7 +153,7 @@ function bombGenerator(){ //funcion para generar piezas
 }
 
 class Piece {
-    constructor(image){
+    constructor(){
         this.x = random(0,windowWidth-200);
         this.y = 0;
         this.vel = 3;
@@ -125,7 +162,6 @@ class Piece {
         this.colSelctor = rancolor
         this.id = "generic";
         this.isStacked = false;
-        this.image = image
 
     }
 
@@ -186,6 +222,9 @@ class Piece {
     getCollision() { return this.collision}
 
     getId() { return this.id}
+
+    setX(newX) { this.x = newX}
+    setY(newY) { this.y = newY}
 }
 
 class HeadPiece extends Piece {
@@ -207,7 +246,6 @@ class HeadPiece extends Piece {
                 fill(107,15,26)
                 break;
         }
-        //fill(255,0,0);
         rect(this.x, this.y, 70, 20);
     }
 }
@@ -267,8 +305,18 @@ class BombPiece extends Piece {
 
     show(){ 
         fill(0);
+        //image(this.image,this.x, this.y,)
         rect(this.x, this.y, 70, 20);
     }
+}
+
+function playTheGame() {
+    if (generator){
+        pieceGenerator();
+        bombGenerator();
+        generator = false
+    }
+    
 }
 
 //esperar temporalmente 
@@ -323,4 +371,10 @@ socket.on('mupi-reset', message => {
     toReset = resetInfo ;
     console.log(toReset);
 
+});
+
+socket.on('mupi-screen', message => {
+    const { screen } = message;
+    screenController = screen;
+    console.log(screenController);
 });

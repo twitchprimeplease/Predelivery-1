@@ -35,6 +35,9 @@ io.on('connection', socket => {
         socket.broadcast.emit('mupi-reset', resetInfo);
         console.log(resetInfo , "a");
     })
+
+    socket.on('mobile-screen', message => 
+    socket.broadcast.emit('mupi-screen', message))
 });
 
 

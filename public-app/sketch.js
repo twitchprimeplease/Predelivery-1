@@ -1,11 +1,16 @@
 const NGROK = `https://${window.location.hostname}`;
 console.log('Server IP: ', NGROK);
-let socket = io(NGROK, { path: '/real-time' });
+let socket = io(NGROK, {
+    path: '/real-time'
+});
 
 let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
+let screenController = 'StartScreen';
+let visualbtn = true;
+let instructionsScreen;
 
 function setup() {
     frameRate(60);
@@ -17,68 +22,103 @@ function setup() {
     controllerX = windowWidth / 2;
     controllerY = windowHeight / 2;
     baseController = windowHeight / 2;
+    instructionsScreen = new InstructionsScreen();
     background(0);
     angleMode(DEGREES);
 
-    socket.emit('device-size', {windowWidth, windowHeight});
+    socket.emit('device-size', {
+        windowWidth,
+        windowHeight
+    });
 
-    // let btn = createButton("Permitir movimiento");
-	// btn.mousePressed(function(){
-	// 	DeviceOrientationEvent.requestPermission();
-	// });
 
     let resetButton = createButton("Restart your lego!");
     resetButton.mousePressed(() => {
 
-        socket.emit('mobile-reset', { resetInfo: true });
+        socket.emit('mobile-reset', {
+            resetInfo: true
+        });
         background(255);
     });
 
 }
 
 function draw() {
-    background(0, 5);
     newCursor(pmouseX, pmouseY);
     fill(255);
-    
-//ellipse(controllerX, controllerY, 50, 50);
+
+    switch (screenController) {
+        case 'StartScreen':
+            background(0);
+
+            instructionsScreen.show();
+
+
+            break;
+        case 'InstructionsScreen':
+            background(255);
+        fill(255);
+            rect(0, 0, 1000,1000)
+            // let btn = createButton("btn");
+
+            break;
+    }
+
+    //ellipse(controllerX, controllerY, 50, 50);
 }
 
-/*function mouseDragged() {
-    socket.emit('positions', { controlX: pmouseX, controlY: pmouseY });
-}*/
+
+
+function pantallaScreen(){
+    
+
+}
 
 function touchMoved() {
     switch (interactions) {
         case 0:
-            socket.emit('mobile-instructions', { interactions, pmouseX, pmouseY });
+            socket.emit('mobile-instructions', {
+                interactions,
+                pmouseX,
+                pmouseY
+            });
             background(255, 0, 0);
             break;
     }
 
-    
+
 }
 
-function touchStarted(){
+function touchStarted() {
     isTouched = true;
 }
 
-function touchEnded(){
+function touchEnded() {
     isTouched = false;
 }
 
 function deviceMoved() {
     switch (interactions) {
         case 1:
-            socket.emit('mobile-instructions', { interactions, pAccelerationX, pAccelerationY, pAccelerationZ });
+            socket.emit('mobile-instructions', {
+                interactions,
+                pAccelerationX,
+                pAccelerationY,
+                pAccelerationZ
+            });
             background(0, 255, 255);
             break;
         case 2:
-            socket.emit('mobile-instructions', { interactions, rotationX, rotationY, rotationZ });
+            socket.emit('mobile-instructions', {
+                interactions,
+                rotationX,
+                rotationY,
+                rotationZ
+            });
             background(0, 255, 0);
             break;
     }
-    
+
 }
 
 function deviceShaken() {
