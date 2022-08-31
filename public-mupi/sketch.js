@@ -7,8 +7,6 @@ let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
 let ballSize = 20;
 let baseController = 0;
-let posY = 0;
-let velY = 2;
 let pieces = [];
 let heightController = 0;
 let pHeightController = 0;
@@ -17,6 +15,8 @@ let baseHeight = 50;
 let isHead = false;
 let isBody = false;
 let isLeg = false;
+
+let toReset = null;
 
 function setup() {
     frameRate(60);
@@ -31,9 +31,9 @@ function setup() {
     mupiHeight = windowHeight;
     baseController = (windowHeight / 2) + baseWeight;
     heightController = windowHeight - (windowHeight / 10);
-    pHeightController = heightController
+    pHeightController = heightController;
     background(255);
-    pieceGenerator()
+    pieceGenerator();
 
 }
 
@@ -47,16 +47,23 @@ function draw() {
         element.move();
         if(element.getY() >=windowHeight){
             pieces.splice(i, 1);
-
         }
+        if(element.getCollision() === true && element.getId() == "Bomb"){
+            pieces.splice(i, 1);
+        }
+        if (toReset) {
+            resetPieces()
+
+            sleep(1000).then(function() {
+                toReset = false;
+            });
+        };
     });
 }
 
 function mousePressed(){
-    pieces.forEach(element => {
-        console.log(element.getX());
-    });
-    pieces.push(new HeadPiece())
+    
+    console.log(toReset);
     
 }
 
@@ -75,7 +82,7 @@ function newCursor(x, y,color) {
 }
 
 function pieceGenerator(){ //funcion para generar piezas 
-    let piece = Math.floor(random(1,4));
+    let piece = Math.floor(random(1,5));
     switch(piece){
         case 1:
             pieces.push(new HeadPiece())
@@ -87,6 +94,7 @@ function pieceGenerator(){ //funcion para generar piezas
             pieces.push(new Legspiece())
             break;
         case 4:
+            pieces.push(new BombPiece())
             break;
     }
 
@@ -97,13 +105,14 @@ function pieceGenerator(){ //funcion para generar piezas
 
 class Piece {
     constructor(){
-        this.x = random(0,windowWidth);
+        this.x = random(0,windowWidth-200);
         this.y = 0;
         this.vel = 3;
         this.collision = false; 
         const rancolor = Math.floor(random(1,4))
         this.colSelctor = rancolor
         this.id = "generic";
+        this.isStacked = false;
 
     }
 
@@ -140,6 +149,9 @@ class Piece {
                     isLeg = true;
                     this.collision = true;
                     pHeightController = pHeightController - 20;
+                } else if (this.id =="Bomb" && isHead === false){
+                    resetPieces();
+                    this.collision = true;
                 }
             }
         }
@@ -147,13 +159,20 @@ class Piece {
         if (this.collision == false){
             this.y += this.vel;
         }else {
-            this.x = baseController + 65;  
+            this.x = baseController + 65; 
+            this.isStacked = true;
         }
     }
 
     getX(){ return this.x}
 
     getY(){ return this.y}
+
+    getIsStacked(){ return this.isStacked}
+
+    getCollision() { return this.collision}
+
+    getId() { return this.id}
 }
 
 class HeadPiece extends Piece {
@@ -226,6 +245,19 @@ class Legspiece extends Piece {
     }
 }
 
+class BombPiece extends Piece {
+    constructor(){ 
+        super();
+        this.id = "Bomb";
+        this.vel = 5;
+    }
+
+    show(){ 
+        fill(0)
+        rect(this.x, this.y, 70, 20);
+    }
+}
+
 //esperar temporalmente 
 function sleep(millisecondsDuration)
 {
@@ -239,8 +271,19 @@ function startPiece() {
     sleep(3000).then(function() {
         startPiece();
     })
-}
+};
 
+function resetPieces() {
+    pieces.forEach((piece, i) =>{
+                if(piece.getIsStacked()){
+                    pieces.splice(i, 1);
+                }
+            });
+            isHead = false;
+            isBody = false;
+            isLeg = false;
+            pHeightController = heightController;
+}
 socket.on('mupi-instructions', instructions => {
     console.log('ID: ' + socket.id);
 
@@ -250,15 +293,6 @@ socket.on('mupi-instructions', instructions => {
             let { pmouseX } = instructions;
             baseController = (pmouseX * mupiWidth) / deviceWidth
             break;
-        // case 1:
-        //     let { pAccelerationX, pAccelerationY, pAccelerationZ } = instructions;
-        //     ballSize = pAccelerationY < 0 ? pAccelerationY * -2 : pAccelerationY * 2;
-        //     break;
-        // case 2:
-        //     let { rotationX, rotationY, rotationZ } = instructions;
-        //     controllerY = (rotationX * mupiHeight) / 90;
-        //     controllerX = (rotationY * mupiWidth) / 90;
-        //     break;
     }
 
 });
@@ -268,4 +302,10 @@ socket.on('mupi-size', deviceSize => {
     deviceWidth = windowWidth;
     deviceHeight = windowHeight;
     console.log(`User is using a smartphone size of ${deviceWidth} and ${deviceHeight}`);
+});
+
+socket.on('mupi-reset', reset => {
+
+    toReset = true;
+
 });

@@ -22,10 +22,17 @@ function setup() {
 
     socket.emit('device-size', {windowWidth, windowHeight});
 
-    let btn = createButton("Permitir movimiento");
-	btn.mousePressed(function(){
-		DeviceOrientationEvent.requestPermission();
-	});
+    // let btn = createButton("Permitir movimiento");
+	// btn.mousePressed(function(){
+	// 	DeviceOrientationEvent.requestPermission();
+	// });
+
+    let resetButton = createButton("Restart your lego!");
+    resetButton.mousePressed(function(){
+
+        socket.emit('mobile-reset', { reset: true });
+        background(255);
+    });
 
 }
 
@@ -33,7 +40,8 @@ function draw() {
     background(0, 5);
     newCursor(pmouseX, pmouseY);
     fill(255);
-    ellipse(controllerX, controllerY, 50, 50);
+    
+//ellipse(controllerX, controllerY, 50, 50);
 }
 
 /*function mouseDragged() {
@@ -47,6 +55,8 @@ function touchMoved() {
             background(255, 0, 0);
             break;
     }
+
+    
 }
 
 function touchStarted(){
