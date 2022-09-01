@@ -1,5 +1,5 @@
 const NGROK = `https://${window.location.hostname}`;
-console.log('Server IP: ', NGROK);
+//console.log('Server IP: ', NGROK);
 let socket = io(NGROK, {
     path: '/real-time'
 });
@@ -8,12 +8,12 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'StartScreen';
+let screenController = 'EndGameScreen';
 let visualbtn = true;
 let startScreen;
 let instructionsScreen;
 let playScreen;
-let enGameScreen;
+let endGameScreen;
 let goodbyeScreen;
 let endGame = false;
 
@@ -22,7 +22,12 @@ let eBottomY = 50
 let eBottomW = 100;
 let eBottomH = 50;
 
+let userName;
+let userEmail;
+let userInput;
+let emailInput;
 
+let sendBottom;
 
 function preload() {
 
@@ -48,7 +53,24 @@ function setup() {
         windowWidth,
         windowHeight
     });
+    
+    userInput = createInput('');
+    userInput.position((windowWidth / 2) - 100, windowHeight - 300);
+    userInput.size(200,40);
+    userInput.input(userInputFuntion);
+    userInput.style('display', 'none');
+    
+    emailInput = createInput('');
+    emailInput.position((windowWidth / 2) - 100, windowHeight - 230);
+    emailInput.size(200,40);
+    emailInput.input(emailInputFuntion);
+    emailInput.style('display', 'none');
 
+    sendBottom =createButton('Enviar');
+    sendBottom.size(windowWidth/3,windowHeight/15)
+    sendBottom.position((windowWidth / 3),windowHeight - windowHeight/5);
+    sendBottom.mousePressed(sendUserInfo);
+    sendBottom.style('display', 'none');
 }
 
 function draw() {
@@ -63,9 +85,11 @@ function draw() {
     switch (screenController) {
         case 'StartScreen':
             startScreen.show();
+            
             break;
         case 'InstructionsScreen':
             instructionsScreen.show();
+            
             break;
             case 'PlayScreen':
             playScreen.show();
@@ -79,10 +103,18 @@ function draw() {
             
             break;
             case 'EndGameScreen':
-
+                userInput.style('display', 'block');
+                emailInput.style('display', 'block');
+                sendBottom.style('display', 'block');
+                endGameScreen.show();
                 break;
             case 'GoodbyeScreen':
-                
+                background(0)
+                emailInput.style('display', 'none');
+                userInput.style('display', 'none');
+                sendBottom.style('display', 'none');
+                fill(255);
+                text('HELP ME OUT', 100,100)
 
                 break;
     }
@@ -106,9 +138,7 @@ function touchMoved() {
 function mousePressed(){
     switch (screenController) {
         case 'StartScreen':
-
             startScreen.touched();
-
             break;
             case 'InstructionsScreen':
                 instructionsScreen.touched();
@@ -119,19 +149,21 @@ function mousePressed(){
                 socket.emit('mobile-reset', {resetInfo: true});
                 endGame = false;
             }
-
             if(endGame === true) {
                 if(pmouseX > eBottomX &&pmouseY > eBottomY && pmouseX < eBottomX + eBottomW && pmouseY < eBottomY + eBottomH){
                 
                 screenController = 'EndGameScreen'
                 socket.emit('mobile-screen', {
-                screen: 'EndGameScreen'});
-                }
+            screen: 'EndGameScreen'});}
             }
-            break;   
+            break;  
+            case 'EndGameScreen':
+                endGameScreen.touched();
+                break; 
     }
-    console.log(screenController);
-}
+
+
+    }
 
 function touchStarted() {
     isTouched = true;
@@ -167,9 +199,13 @@ function deviceMoved() {
 
 }
 
-function deviceShaken() {
-    //socket.emit('mobile-instructions', 'Moved!');
-    //background(0, 255, 255);
+function userInputFuntion(){ 
+    userName = this.value();
+    
+}
+
+function emailInputFuntion () {
+    userEmail = this.value();
 }
 
 function windowResized() {
@@ -182,7 +218,40 @@ function newCursor(x, y) {
     ellipse(x, y, 10, 10);
 }
 
+function sendUserInfo(){
+    if(userName&& userEmail){
+                screenController = 'GoodbyeScreen'
+                socket.emit('mobile-screen', {
+                screen: 'GoodbyeScreen'
+            })
+            socket.emit('mobile-userInfo',{
+                name: userName,
+                email: userEmail,
+            })
+    }
+    console.log(userName, userEmail)
+}
+
 socket.on('mobile-endGame', message => {
     let { endGameInfo } = message;
     endGame = endGameInfo;
 })
+
+//   let xB2 = windowWidth/3;
+//                 let yB2 = windowHeight - windowHeight/5;
+//                 let wB2 = windowWidth/3
+//                 let hB2 = windowHeight/15;
+
+// if(userName != undefined && userEmail != undefined){
+//     if (pmouseX > this.xB2 &&pmouseY > this.yB2 && pmouseX < this.xB2 + this.wB2 && pmouseY < this.yB2 + this.hB2){
+//         screenController = 'GoodbyeScreen'
+//         socket.emit('mobile-screen', {
+//         screen: 'GoodbyeScreen'
+//     })
+//     socket.emit('mobile-userInfo',{
+//         name: userName,
+//         email: userEmail,
+//     })
+//     console.log('no me mueres a mi, puerca')
+//     }
+// }

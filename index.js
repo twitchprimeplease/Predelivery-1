@@ -45,6 +45,10 @@ socket.on('mupi-endGame', message => {
     socket.broadcast.emit('mobile-endGame', message);
 });
 
+socket.on('mobile-userInfo', message => {
+    console.log(message);
+    socket.broadcast.emit('mupi-userInfo', message)
+})
 
 });
 

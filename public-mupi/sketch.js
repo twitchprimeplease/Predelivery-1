@@ -44,7 +44,6 @@ function setup() {
     pHeightController = heightController;
     background(255);
     
-    
 }
 
 function draw() {
@@ -128,6 +127,8 @@ function newCursor(x, y,color) {
     fill(color);
     ellipse(x, y, 10, 10);
 }
+
+
 
 function pieceGenerator(){ //funcion para generar piezas 
     let piece = Math.floor(random(1,4));
