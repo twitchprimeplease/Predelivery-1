@@ -8,15 +8,25 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'PlayScreen';
+let screenController = 'StartScreen';
 let visualbtn = true;
 let startScreen;
+let instructionsScreen;
+let playScreen;
+let enGameScreen;
+let goodbyeScreen;
 let endGame = false;
 
 let eBottomX;
 let eBottomY = 50
 let eBottomW = 100;
 let eBottomH = 50;
+
+
+
+function preload() {
+
+}
 
 
 function setup() {
@@ -30,7 +40,7 @@ function setup() {
     controllerY = windowHeight / 2;
     baseController = windowHeight / 2;
     eBottomX = windowWidth - 120;
-    startScreen = new StartScreen();
+
     background(0);
     angleMode(DEGREES);
 
@@ -39,46 +49,32 @@ function setup() {
         windowHeight
     });
 
-
-    let resetButton = createButton("¡Ármalo de nuevo!");
-    resetButton.mousePressed(() => {
-
-        socket.emit('mobile-reset', {
-            resetInfo: true
-        });
-        background(255);
-    });
-
 }
 
 function draw() {
     newCursor(pmouseX, pmouseY);
     fill(255);
+    startScreen = new StartScreen(windowWidth,windowHeight);
+    instructionsScreen = new InstructionsScreen(windowWidth, windowHeight);
+    playScreen = new PlayScreen(windowWidth, windowHeight);
+    endGameScreen = new EndGameScreen(windowWidth, windowHeight);
+    goodbyeScreen = new GoodbyeScreen(windowWidth, windowHeight);
 
     switch (screenController) {
         case 'StartScreen':
-            background(0);
-
             startScreen.show();
-
-
             break;
         case 'InstructionsScreen':
-            background(255);
-            let playButton = createButton("Jugar");
-            playButton.mousePressed(() => {
-            screenController = 'PlayScreen'
-            socket.emit('mobile-screen', {
-            screen: 'PlayScreen'
-            });
-        });
+            instructionsScreen.show();
             break;
             case 'PlayScreen':
+            playScreen.show();
             fill(0)
-            if(endGame === true){
+            if(endGame != false){
                 rect(eBottomX,eBottomY,eBottomW,eBottomH);
-            fill(255);
-            text('Fin',eBottomX + eBottomW/2,eBottomY + eBottomH/2)
+                fill(255);
+                textAlign(CENTER,CENTER);
+                text('Fin',eBottomX + eBottomW/2,eBottomY + eBottomH/2)
             }
             
             break;
@@ -86,7 +82,8 @@ function draw() {
 
                 break;
             case 'GoodbyeScreen':
-                text('Thanks for Playing! Have a good day!', 500,500)
+                
+
                 break;
     }
 
@@ -101,34 +98,49 @@ function touchMoved() {
                 pmouseX,
                 pmouseY
             });
-            background(255, 0, 0);
             break;
     }
+    
+}
+
+function mousePressed(){
     switch (screenController) {
+        case 'StartScreen':
+
+            startScreen.touched();
+
+            break;
+            case 'InstructionsScreen':
+                instructionsScreen.touched();
+            
+                break;
         case 'PlayScreen':
+            if (pmouseX > playScreen.getxB() &&pmouseY > playScreen.getyB() && pmouseX < playScreen.getxB() + playScreen.getwB() && pmouseY < playScreen.getyB() + playScreen.gethB()){
+                socket.emit('mobile-reset', {resetInfo: true});
+                endGame = false;
+            }
+
             if(endGame === true) {
                 if(pmouseX > eBottomX &&pmouseY > eBottomY && pmouseX < eBottomX + eBottomW && pmouseY < eBottomY + eBottomH){
                 
-            screenController = 'EndGameScreen'
-            socket.emit('mobile-screen', {
-            screen: 'EndGameScreen'});
+                screenController = 'EndGameScreen'
+                socket.emit('mobile-screen', {
+                screen: 'EndGameScreen'});
                 }
             }
-
-            break;
-        
+            break;   
     }
-
-
-
+    console.log(screenController);
 }
 
 function touchStarted() {
     isTouched = true;
+
 }
 
 function touchEnded() {
     isTouched = false;
+
 }
 
 function deviceMoved() {

@@ -20,7 +20,7 @@ let isLeg = false;
 let toReset = null;
 let bombImage = ''
 
-let screenController = 'PlayScreen';
+let screenController = 'StartScreen';
 let generator = true;
 
 
@@ -95,7 +95,6 @@ function draw() {
                 }
                 
             });
-            //console.log(yourLego)
             break;
 
         case 'GoodbyeScreen':
@@ -111,7 +110,11 @@ function draw() {
 
 function mousePressed(){
     //console.log(toReset);
-   console.log(screenController)
+    if (mouseX > baseController && mouseX < baseController + 200 && mouseY > heightController && mouseY < heightController + 50) {
+
+                console.log("toque")
+            
+        }
 }
 
 function mouseDragged() {
@@ -158,7 +161,7 @@ function bombGenerator(){ //funcion para generar piezas
 
 class Piece {
     constructor(){
-        this.x = random(0,windowWidth-200);
+        this.x = random(0,windowWidth-70);
         this.y = 0;
         this.vel = 3;
         this.collision = false; 
@@ -187,9 +190,13 @@ class Piece {
 
     move(){
 
-        if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
-            if (dist(this.y, this.x, this.y, baseController)<=200) {
+        // if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
+        //     if (dist(this.y, this.x, this.y, baseController)<=200) {
+            if (this.x > baseController && this.x < baseController + 200 && this.collision == false || this.x + 70 > baseController && this.x + 70 < baseController + 200 && this.collision == false) {
+                if(this.y > pHeightController && this.y < pHeightController + 5 ) {
 
+                //if (mouseX > baseController && mouseX < baseController + 200 && mouseY > heightController && mouseY < heightController + 50) {
+                    console.log("HELP ME PLEASE")
                 if(this.id =="Head"&&isHead === false && isBody === true) {
                     isHead = true;
                     this.collision = true;
@@ -339,11 +346,7 @@ function startPiece() {
 };
 
 function resetPieces() {
-    pieces.forEach((piece, i) =>{
-                if(piece.getIsStacked()){
-                    pieces.splice(i, 1);
-                }
-            });
+    pieces.splice(0, pieces.length);
             isHead = false;
             isBody = false;
             isLeg = false;
