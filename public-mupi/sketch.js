@@ -20,7 +20,7 @@ let isLeg = false;
 let toReset = null;
 let bombImage = ''
 
-let screenController = 'PlayScreen';
+let screenController = 'StartScreen';
 let generator = true;
 
 

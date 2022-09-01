@@ -8,13 +8,14 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'EndGameScreen';
+let screenController = 'WarningScreen';
 let visualbtn = true;
 let startScreen;
 let instructionsScreen;
 let playScreen;
 let endGameScreen;
 let goodbyeScreen;
+let warningScreen;
 let endGame = false;
 
 let eBottomX;
@@ -81,6 +82,7 @@ function draw() {
     playScreen = new PlayScreen(windowWidth, windowHeight);
     endGameScreen = new EndGameScreen(windowWidth, windowHeight);
     goodbyeScreen = new GoodbyeScreen(windowWidth, windowHeight);
+    warningScreen = new WarningScreen(windowWidth, windowHeight);
 
     switch (screenController) {
         case 'StartScreen':
@@ -108,6 +110,9 @@ function draw() {
                 sendBottom.style('display', 'block');
                 endGameScreen.show();
                 break;
+            case 'WarningScreen':
+                warningScreen.show();
+                break;
             case 'GoodbyeScreen':
                 background(0)
                 emailInput.style('display', 'none');
@@ -118,8 +123,6 @@ function draw() {
 
                 break;
     }
-
-    
 }
 
 function touchMoved() {
@@ -152,11 +155,15 @@ function mousePressed(){
             if(endGame === true) {
                 if(pmouseX > eBottomX &&pmouseY > eBottomY && pmouseX < eBottomX + eBottomW && pmouseY < eBottomY + eBottomH){
                 
-                screenController = 'EndGameScreen'
+                screenController = 'WarningScreen'
                 socket.emit('mobile-screen', {
             screen: 'EndGameScreen'});}
             }
             break;  
+            case 'WarningScreen':
+            warningScreen.touched();
+            warningScreen.touched2();
+                break;
             case 'EndGameScreen':
                 endGameScreen.touched();
                 break; 
@@ -236,22 +243,3 @@ socket.on('mobile-endGame', message => {
     let { endGameInfo } = message;
     endGame = endGameInfo;
 })
-
-//   let xB2 = windowWidth/3;
-//                 let yB2 = windowHeight - windowHeight/5;
-//                 let wB2 = windowWidth/3
-//                 let hB2 = windowHeight/15;
-
-// if(userName != undefined && userEmail != undefined){
-//     if (pmouseX > this.xB2 &&pmouseY > this.yB2 && pmouseX < this.xB2 + this.wB2 && pmouseY < this.yB2 + this.hB2){
-//         screenController = 'GoodbyeScreen'
-//         socket.emit('mobile-screen', {
-//         screen: 'GoodbyeScreen'
-//     })
-//     socket.emit('mobile-userInfo',{
-//         name: userName,
-//         email: userEmail,
-//     })
-//     console.log('no me mueres a mi, puerca')
-//     }
-// }
