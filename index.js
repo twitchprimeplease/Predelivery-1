@@ -36,8 +36,16 @@ io.on('connection', socket => {
         console.log(resetInfo , "a");
     })
 
-    socket.on('mobile-screen', message => 
-    socket.broadcast.emit('mupi-screen', message))
+    socket.on('mobile-screen', message => {
+        console.log(message);
+    socket.broadcast.emit('mupi-screen', message)
+});
+
+socket.on('mupi-endGame', message => {
+    socket.broadcast.emit('mobile-endGame', message);
+});
+
+
 });
 
 

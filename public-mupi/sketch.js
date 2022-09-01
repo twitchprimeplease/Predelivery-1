@@ -20,7 +20,7 @@ let isLeg = false;
 let toReset = null;
 let bombImage = ''
 
-let screenController = 'StartScreen';
+let screenController = 'PlayScreen';
 let generator = true;
 
 
@@ -39,7 +39,7 @@ function setup() {
     controllerY = windowHeight / 2;
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
-    baseController = (windowHeight / 2) + baseWeight;
+    baseController = (windowHeight / 2);
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController;
     background(255);
@@ -57,7 +57,7 @@ function draw() {
             break;
         case 'InstructionsScreen':
 
-            text('Instructions',windowWidth/2,windowHeight / 2)
+            text('Instrucciones',300,windowHeight / 2)
             break;
         case 'PlayScreen':
             playTheGame()
@@ -79,9 +79,13 @@ function draw() {
             });
         };
     });
+
+        if (isHead === true){
+            socket.emit('mupi-endGame', {endGameInfo: true});
+        }
             break;
         case 'EndGameScreen':
-            text('Congrats! This is your lego!',windowWidth/2,windowHeight / 2);
+            text('¡Este es tu lego!',windowWidth/2,windowHeight / 2);
             let yourLego = [];
             pieces.forEach((element, i) => {
                 if(element.getIsStacked() != true){
@@ -95,7 +99,7 @@ function draw() {
             break;
 
         case 'GoodbyeScreen':
-            text('Thanks for Playing! Have a good day!')
+            text('Thanks for Playing! Have a good day!', 500,500)
             break;
             
     }
@@ -107,7 +111,7 @@ function draw() {
 
 function mousePressed(){
     //console.log(toReset);
-    screenController = 'EndGameScreen';
+   console.log(screenController)
 }
 
 function mouseDragged() {

@@ -8,9 +8,16 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'StartScreen';
+let screenController = 'PlayScreen';
 let visualbtn = true;
-let instructionsScreen;
+let startScreen;
+let endGame = false;
+
+let eBottomX;
+let eBottomY = 50
+let eBottomW = 100;
+let eBottomH = 50;
+
 
 function setup() {
     frameRate(60);
@@ -22,7 +29,8 @@ function setup() {
     controllerX = windowWidth / 2;
     controllerY = windowHeight / 2;
     baseController = windowHeight / 2;
-    instructionsScreen = new InstructionsScreen();
+    eBottomX = windowWidth - 120;
+    startScreen = new StartScreen();
     background(0);
     angleMode(DEGREES);
 
@@ -32,7 +40,7 @@ function setup() {
     });
 
 
-    let resetButton = createButton("Restart your lego!");
+    let resetButton = createButton("¡Ármalo de nuevo!");
     resetButton.mousePressed(() => {
 
         socket.emit('mobile-reset', {
@@ -51,27 +59,38 @@ function draw() {
         case 'StartScreen':
             background(0);
 
-            instructionsScreen.show();
+            startScreen.show();
 
 
             break;
         case 'InstructionsScreen':
             background(255);
-        fill(255);
-            rect(0, 0, 1000,1000)
-            // let btn = createButton("btn");
-
+            let playButton = createButton("Jugar");
+            playButton.mousePressed(() => {
+            screenController = 'PlayScreen'
+            socket.emit('mobile-screen', {
+            screen: 'PlayScreen'
+            });
+        });
             break;
+            case 'PlayScreen':
+            fill(0)
+            if(endGame === true){
+                rect(eBottomX,eBottomY,eBottomW,eBottomH);
+            fill(255);
+            text('Fin',eBottomX + eBottomW/2,eBottomY + eBottomH/2)
+            }
+            
+            break;
+            case 'EndGameScreen':
+
+                break;
+            case 'GoodbyeScreen':
+                text('Thanks for Playing! Have a good day!', 500,500)
+                break;
     }
 
-    //ellipse(controllerX, controllerY, 50, 50);
-}
-
-
-
-function pantallaScreen(){
     
-
 }
 
 function touchMoved() {
@@ -85,6 +104,21 @@ function touchMoved() {
             background(255, 0, 0);
             break;
     }
+    switch (screenController) {
+        case 'PlayScreen':
+            if(endGame === true) {
+                if(pmouseX > eBottomX &&pmouseY > eBottomY && pmouseX < eBottomX + eBottomW && pmouseY < eBottomY + eBottomH){
+                
+            screenController = 'EndGameScreen'
+            socket.emit('mobile-screen', {
+            screen: 'EndGameScreen'});
+                }
+            }
+
+            break;
+        
+    }
+
 
 
 }
@@ -135,3 +169,8 @@ function newCursor(x, y) {
     fill(255);
     ellipse(x, y, 10, 10);
 }
+
+socket.on('mobile-endGame', message => {
+    let { endGameInfo } = message;
+    endGame = endGameInfo;
+})
