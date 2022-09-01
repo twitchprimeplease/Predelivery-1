@@ -20,7 +20,7 @@ let isLeg = false;
 let toReset = null;
 let bombImage = ''
 
-let screenController = 'StartScreen';
+let screenController = 'PlayScreen';
 let generator = true;
 
 
@@ -56,13 +56,14 @@ function draw() {
             text('Hola',100,100);
             break;
         case 'InstructionsScreen':
-
             text('Instrucciones',300,windowHeight / 2)
             break;
         case 'PlayScreen':
             playTheGame()
             fill(0);
-        rect(baseController, heightController, 200, 50);
+        rect(baseController, heightController, 150, 50);
+        fill(130);
+        rect(baseController - 70, heightController, 150, 50);
         pieces.forEach((element, i) => {
         element.show();
         element.move();
@@ -102,9 +103,6 @@ function draw() {
             break;
             
     }
-    
-
-    //image(bombImage, 100, 100);
 
 }
 
@@ -152,7 +150,7 @@ function pieceGenerator(){ //funcion para generar piezas
 }
 function bombGenerator(){ //funcion para generar piezas 
 
-            pieces.push(new BombPiece());
+            pieces.push(new BombPiece(bombImage));
 
     sleep(2000).then(function() {
         bombGenerator();
@@ -190,13 +188,8 @@ class Piece {
 
     move(){
 
-        // if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
-        //     if (dist(this.y, this.x, this.y, baseController)<=200) {
-            if (this.x > baseController && this.x < baseController + 200 && this.collision == false || this.x + 70 > baseController && this.x + 70 < baseController + 200 && this.collision == false) {
-                if(this.y > pHeightController && this.y < pHeightController + 5 ) {
-
-                //if (mouseX > baseController && mouseX < baseController + 200 && mouseY > heightController && mouseY < heightController + 50) {
-                    console.log("HELP ME PLEASE")
+        if (dist(this.y, this.x, pHeightController, this.x)<=25 && this.collision == false) {
+            if (dist(this.y, this.x, this.y, baseController)<=150) {
                 if(this.id =="Head"&&isHead === false && isBody === true) {
                     isHead = true;
                     this.collision = true;
@@ -219,7 +212,7 @@ class Piece {
         if (this.collision == false){
             this.y += this.vel;
         }else {
-            this.x = baseController + 65; 
+            this.x = baseController; 
             this.isStacked = true;
         }
     }
@@ -258,6 +251,7 @@ class HeadPiece extends Piece {
                 break;
         }
         rect(this.x, this.y, 70, 20);
+
     }
 }
 
@@ -308,16 +302,17 @@ class Legspiece extends Piece {
 }
 
 class BombPiece extends Piece {
-    constructor(){ 
+    constructor(image){ 
         super();
         this.id = "Bomb";
         this.vel = 6;
+        this.image = image;
     }
 
     show(){ 
         fill(0);
-        //image(this.image,this.x, this.y,)
-        rect(this.x, this.y, 70, 20);
+        //rect(this.x, this.y, 70, 20);
+        image(this.image,this.x - 20, this.y - 40, 109,63)
     }
 }
 
@@ -331,8 +326,7 @@ function playTheGame() {
 }
 
 //esperar temporalmente 
-function sleep(millisecondsDuration)
-{
+function sleep(millisecondsDuration) {
     return new Promise((resolve) => {
     setTimeout(resolve, millisecondsDuration);
     })
