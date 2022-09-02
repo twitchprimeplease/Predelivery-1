@@ -136,6 +136,9 @@ function draw() {
             yourLego[1].showEnd(windowWidth/2, windowHeight/2+95)
             yourLego[2].showEnd(windowWidth/2, windowHeight/2-20)
             break;
+            case 'WarningScreen':
+            screenController = 'StartScreen';
+                break;
             
     }
 
