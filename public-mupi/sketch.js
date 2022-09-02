@@ -131,7 +131,6 @@ function draw() {
                     yourLego.push(element);
                 } 
             
-
             });
             yourLego[0].showEnd(windowWidth/2, windowHeight/2+225)
             yourLego[1].showEnd(windowWidth/2, windowHeight/2+95)
@@ -183,7 +182,7 @@ function pieceGenerator(){ //funcion para generar piezas
 }
 function bombGenerator(){ //funcion para generar bombas 
 
-           // pieces.push(new BombPiece(bombImage));
+        pieces.push(new BombPiece(bombImage));
 
     sleep(2000).then(function() {
         bombGenerator();
