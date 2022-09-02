@@ -32,10 +32,18 @@ let sendBottom;
 
 let startScreenImg;
 let instructionsScreenImg;
+let playScreenImg;
+let endGameScreenImg;
+let warningScreenImg;
+let goodScreenImg;
 
 function preload() {
-    startScreenImg = loadImage('./Images/StartScreen_App.png')
-    instructionsScreenImg = loadImage('./Images/InstrucctionsScreen_App.png')
+    startScreenImg = loadImage('./Images/StartScreen_App.png');
+    instructionsScreenImg = loadImage('./Images/InstrucctionsScreen_App.png');
+    playScreenImg = loadImage('./Images/PlayScreen_App.png');
+    endGameScreenImg = loadImage('./Images/EndGameScreen_App.png');
+    warningScreenImg = loadImage('./Images/WarningScreen_App.png')
+    goodScreenImg = loadImage('./Images/GoodbyeScreen_App.png')
 }
 
 
@@ -87,40 +95,49 @@ function draw() {
     endGameScreen = new EndGameScreen(windowWidth, windowHeight);
     goodbyeScreen = new GoodbyeScreen(windowWidth, windowHeight);
     warningScreen = new WarningScreen(windowWidth, windowHeight);
-    
+    imageMode(CENTER)
     switch (screenController) {
         case 'StartScreen':
-            background(0)
-            imageMode(CENTER)
-            image(startScreenImg,windowWidth/2, windowHeight/2+50,windowWidth)
+            background(0);
+            image(startScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9))
             startScreen.show();
             
             break;
         case 'InstructionsScreen':
             background(0);
-            image(instructionsScreenImg,windowWidth/2, windowHeight/2+50,windowWidth);
+            image(instructionsScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
             instructionsScreen.show();
             
             break;
             case 'PlayScreen':
+            background(0)
+            image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
             playScreen.show();
-            fill(0)
+            
+            fill(0);
             if(endGame != false){
-                rect(eBottomX,eBottomY,eBottomW,eBottomH);
+                rect(eBottomX,eBottomY,eBottomW,eBottomH,eBottomY/2);
                 fill(255);
                 textAlign(CENTER,CENTER);
-                text('Fin',eBottomX + eBottomW/2,eBottomY + eBottomH/2)
+                text('Terminar',eBottomX + eBottomW/2,eBottomY + eBottomH/2)
             }
             
             break;
             case 'EndGameScreen':
+                image(endGameScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
                 userInput.style('display', 'block');
                 emailInput.style('display', 'block');
                 sendBottom.style('display', 'block');
                 endGameScreen.show();
+                textSize(windowWidth/25)
+                fill(87, 110, 228);
+                text('Nombre',(windowWidth / 2) - 100, windowHeight - 310)
+                text('E-Mail',(windowWidth / 2) - 100, windowHeight - 240)
                 break;
             case 'WarningScreen':
+                image(warningScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
                 warningScreen.show();
+                
                 break;
             case 'GoodbyeScreen':
                 background(0)
@@ -128,7 +145,7 @@ function draw() {
                 userInput.style('display', 'none');
                 sendBottom.style('display', 'none');
                 fill(255);
-
+                image(goodScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
                 break;
     }
 }
@@ -162,10 +179,9 @@ function mousePressed(){
             }
             if(endGame === true) {
                 if(pmouseX > eBottomX &&pmouseY > eBottomY && pmouseX < eBottomX + eBottomW && pmouseY < eBottomY + eBottomH){
-                
                 screenController = 'WarningScreen'
                 socket.emit('mobile-screen', {
-            screen: 'EndGameScreen'});}
+                screen: 'EndGameScreen'});}
             }
             break;  
             case 'WarningScreen':

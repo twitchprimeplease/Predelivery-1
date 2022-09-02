@@ -9,7 +9,7 @@ class InstructionsScreen {
     show(){
 
         fill(87, 110, 228);
-        rect(this.xB,this.yB,this.wB,this.hB);
+        rect(this.xB,this.yB,this.wB,this.hB,this.yB/2);
         fill(250);
         textSize(windowWidth/25);
         textAlign(CENTER,CENTER);

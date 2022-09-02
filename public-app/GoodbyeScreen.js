@@ -9,7 +9,7 @@ class GoodbyeScreen {
     show(){
         background(0)
         fill(111,148,230);
-        rect(this.xB,this.yB,this.wB,this.hB);
+        rect(this.xB,this.yB,this.wB,this.hB,this.yB/2);
         fill(250);
         textSize(windowWidth/25);
         textAlign(CENTER,CENTER);

@@ -10,7 +10,7 @@ class StartScreen {
   
         fill(210,52,59);
         
-        rect(this.xB,this.yB,this.wB,this.hB);
+        rect(this.xB,this.yB,this.wB,this.hB,this.yB/2);
         fill(250)
         textSize(windowWidth/22)
         textAlign(CENTER,CENTER);
