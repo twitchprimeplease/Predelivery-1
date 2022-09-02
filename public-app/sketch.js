@@ -8,7 +8,7 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'WarningScreen';
+let screenController = 'StartScreen';
 let visualbtn = true;
 let startScreen;
 let instructionsScreen;
@@ -30,8 +30,12 @@ let emailInput;
 
 let sendBottom;
 
-function preload() {
+let startScreenImg;
+let instructionsScreenImg;
 
+function preload() {
+    startScreenImg = loadImage('./Images/StartScreen_App.png')
+    instructionsScreenImg = loadImage('./Images/InstrucctionsScreen_App.png')
 }
 
 
@@ -83,13 +87,18 @@ function draw() {
     endGameScreen = new EndGameScreen(windowWidth, windowHeight);
     goodbyeScreen = new GoodbyeScreen(windowWidth, windowHeight);
     warningScreen = new WarningScreen(windowWidth, windowHeight);
-
+    
     switch (screenController) {
         case 'StartScreen':
+            background(0)
+            imageMode(CENTER)
+            image(startScreenImg,windowWidth/2, windowHeight/2+50,windowWidth)
             startScreen.show();
             
             break;
         case 'InstructionsScreen':
+            background(0);
+            image(instructionsScreenImg,windowWidth/2, windowHeight/2+50,windowWidth);
             instructionsScreen.show();
             
             break;
@@ -119,7 +128,6 @@ function draw() {
                 userInput.style('display', 'none');
                 sendBottom.style('display', 'none');
                 fill(255);
-                text('HELP ME OUT', 100,100)
 
                 break;
     }

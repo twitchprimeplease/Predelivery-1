@@ -33,7 +33,7 @@ io.on('connection', socket => {
 
     socket.on('mobile-reset', resetInfo => {
         socket.broadcast.emit('mupi-reset', resetInfo);
-        console.log(resetInfo , "a");
+        console.log(resetInfo);
     })
 
     socket.on('mobile-screen', message => {

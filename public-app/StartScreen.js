@@ -1,18 +1,18 @@
 class StartScreen {
     constructor(windowWidth,windowHeight){
-        this.xB = windowWidth/3;
-        this.yB = windowHeight - windowHeight/10;
-        this.wB = windowWidth/3
+        this.xB = windowWidth/3 - 30;
+        this.yB = windowHeight - windowHeight/2;
+        this.wB = windowWidth/2;
         this.hB = windowHeight/15;
     }
 
     show(){
-        background(0)
-        fill(111,148,230);
+  
+        fill(210,52,59);
         
         rect(this.xB,this.yB,this.wB,this.hB);
         fill(250)
-        textSize(windowWidth/25)
+        textSize(windowWidth/22)
         textAlign(CENTER,CENTER);
         text("Instrucciones",this.xB + this.wB/2,this.yB + this.hB/2)
     }

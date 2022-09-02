@@ -1,12 +1,9 @@
-//import ImageManager from "./ImagesManager";
 const NGROK = `https://${window.location.hostname}`;
 let socket = io(NGROK, { path: '/real-time' });
 console.log('Server IP: ', NGROK);
 
-let controllerX, controllerY = 0;
 let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
-let ballSize = 20;
 let baseController = 0;
 let pieces = [];
 let heightController = 0;
@@ -18,7 +15,7 @@ let isBody = false;
 let isLeg = false;
 
 let toReset = null;
-let bombImage = ''
+let bombImage;
 
 let screenController = 'StartScreen';
 let generator = true;
@@ -29,14 +26,11 @@ function preload(){
 }
 
 function setup() {
-    frameRate(60);
     canvas = createCanvas(windowWidth, windowHeight);
     canvas.style('z-index', '-1');
     canvas.style('position', 'fixed');
     canvas.style('top', '0');
     canvas.style('right', '0');
-    controllerX = windowWidth / 2;
-    controllerY = windowHeight / 2;
     mupiWidth = windowWidth;
     mupiHeight = windowHeight;
     baseController = (windowHeight / 2);
@@ -60,25 +54,25 @@ function draw() {
         case 'PlayScreen':
             playTheGame()
             fill(0);
-        rect(baseController, heightController, 150, 50);
-        fill(130);
-        rect(baseController - 70, heightController, 150, 50);
-        pieces.forEach((element, i) => {
-        element.show();
-        element.move();
-        if(element.getY() >=windowHeight){
-            pieces.splice(i, 1);
-        }
-        if(element.getCollision() === true && element.getId() == "Bomb"){
-            pieces.splice(i, 1);
-        }
-        if (toReset) {
-            resetPieces()
-            sleep(1000).then(function() {
-                toReset = false;
+            rect(baseController, heightController, 150, 50);
+            fill(130);
+            rect(baseController - 70, heightController, 150, 50);
+            pieces.forEach((element, i) => {
+            element.show();
+            element.move();
+            if(element.getY() >=windowHeight){
+                pieces.splice(i, 1);
+            }
+            if(element.getCollision() === true && element.getId() == "Bomb"){
+                pieces.splice(i, 1);
+            }
+            if (toReset) {
+                resetPieces();
+                sleep(1000).then(function() {
+                    toReset = false;
+                });
+            };
             });
-        };
-    });
 
         if (isHead === true){
             socket.emit('mupi-endGame', {endGameInfo: true});
@@ -99,6 +93,11 @@ function draw() {
 
         case 'GoodbyeScreen':
             text('Thanks for Playing! Have a good day!', 500,500)
+            pieces.forEach((element, i) => {
+                if(element.getIsStacked() != true){
+                    pieces.splice(i, 1);
+                }
+            });
             break;
             
     }
@@ -106,12 +105,7 @@ function draw() {
 }
 
 function mousePressed(){
-    //console.log(toReset);
-    if (mouseX > baseController && mouseX < baseController + 200 && mouseY > heightController && mouseY < heightController + 50) {
 
-                console.log("toque")
-            
-        }
 }
 
 function mouseDragged() {
@@ -149,7 +143,7 @@ function pieceGenerator(){ //funcion para generar piezas
         pieceGenerator();
     })
 }
-function bombGenerator(){ //funcion para generar piezas 
+function bombGenerator(){ //funcion para generar bombas 
 
             pieces.push(new BombPiece(bombImage));
 
@@ -321,7 +315,7 @@ function playTheGame() {
     if (generator){
         pieceGenerator();
         bombGenerator();
-        generator = false
+        generator = false;
     }
     
 }
@@ -330,14 +324,14 @@ function playTheGame() {
 function sleep(millisecondsDuration) {
     return new Promise((resolve) => {
     setTimeout(resolve, millisecondsDuration);
-    })
+    });
 }
 
 function startPiece() {
     pieces.push(new HeadPiece());
     sleep(3000).then(function() {
         startPiece();
-    })
+    });
 };
 
 function resetPieces() {
@@ -371,7 +365,7 @@ socket.on('mupi-size', deviceSize => {
 socket.on('mupi-reset', message => {
     const {resetInfo} = message;
     toReset = resetInfo ;
-    console.log(toReset);
+
 
 });
 

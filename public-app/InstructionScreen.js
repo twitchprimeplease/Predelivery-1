@@ -7,8 +7,8 @@ class InstructionsScreen {
     }
 
     show(){
-        background(0)
-        fill(111,148,230);
+
+        fill(87, 110, 228);
         rect(this.xB,this.yB,this.wB,this.hB);
         fill(250);
         textSize(windowWidth/25);
