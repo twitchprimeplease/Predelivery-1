@@ -42,7 +42,7 @@ let generator = true;
 
 function preload(){
     bombImage = loadImage('./Images/img_bomb.png')
-    StartScreenImg = loadImage('./Images/StartScreen_Mupi.png')
+    StartScreenImg = loadImage('./Images/StartScreen_Mupi.jpeg')
     QRImg = loadImage('./Images/QR_Mupi.png')
     instructionsScreen = loadImage('./Images/InstructionsScreen_Mupi.png');
     playScreenImg = loadImage('./Images/PlayScreen_Mupi.png');
@@ -84,7 +84,7 @@ function draw() {
     switch (screenController){
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-            image(QRImg,windowWidth/2, windowHeight/2 - 100, 221,221)
+            //image(QRImg,windowWidth/2, windowHeight/2 - 100, 221,221)
             break;
         case 'InstructionsScreen':
             image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
@@ -136,7 +136,7 @@ function draw() {
             yourLego[1].showEnd(windowWidth/2, windowHeight/2+95)
             yourLego[2].showEnd(windowWidth/2, windowHeight/2-20)
             break;
-            case 'WarningScreen':
+            case 'GoodbyeScreen':
             screenController = 'StartScreen';
                 break;
             
@@ -187,7 +187,7 @@ function bombGenerator(){ //funcion para generar bombas
 
         pieces.push(new BombPiece(bombImage));
 
-    sleep(2000).then(function() {
+    sleep(3000).then(function() {
         bombGenerator();
     })
 }
@@ -448,7 +448,7 @@ class BombPiece extends Piece {
     constructor(image){ 
         super();
         this.id = "Bomb";
-        this.vel = 6;
+        this.vel = 5;
         this.image = image;
     }
 
