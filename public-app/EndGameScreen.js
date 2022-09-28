@@ -21,9 +21,6 @@ class EndGameScreen {
         if (pmouseX > this.xB &&pmouseY > this.yB && pmouseX < this.xB + this.wB && pmouseY < this.yB + this.hB){
             screenController = 'GoodbyeScreen'
             socket.emit('mobile-screen', {screen: 'StartScreen'})
-
         }
-
-        
     }
 }
