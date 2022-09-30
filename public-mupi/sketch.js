@@ -6,6 +6,7 @@ let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
 let baseController = 0;
 let pieces = [];
+let bombs = [];
 let heightController = 0;
 let pHeightController = 0;
 let baseWeight = 200;
@@ -22,18 +23,6 @@ let QRImg;
 let instructionsScreenImg;
 let playScreenImg;
 let endGameScreen;
-let head1Img;
-let head2Img;
-let head3Img;
-let head4Img;
-let chest1Img;
-let chest2Img;
-let chest3Img;
-let chest4Img;
-let legs1Img;
-let legs2Img;
-let legs3Img;
-let legs4Img;
 let baseImg;
 
 let screenController = 'PlayScreen';
@@ -48,18 +37,6 @@ function preload(){
     instructionsScreen = loadImage('./Images/InstructionsScreen_Mupi.png');
     playScreenImg = loadImage('./Images/PlayScreen_Mupi.png');
     endGameScreen = loadImage('./Images/EndGameScreen_Mupi.png');
-    head1Img = loadImage('./Images/img_head1.png');
-    head2Img = loadImage('./Images/img_head2.png');
-    head3Img = loadImage('./Images/img_head3.png');
-    head4Img = loadImage('./Images/img_head4.png');
-    chest1Img = loadImage('./Images/img_chest1.png')
-    chest2Img = loadImage('./Images/img_chest2.png')
-    chest3Img = loadImage('./Images/img_chest3.png')
-    chest4Img = loadImage('./Images/img_chest4.png')
-    legs1Img = loadImage('./Images/img_legs1.png')
-    legs2Img = loadImage('./Images/img_legs2.png')
-    legs3Img = loadImage('./Images/img_legs3.png')
-    legs4Img = loadImage('./Images/img_legs4.png')
     baseImg = loadImage('./Images/img_base.png');
     imageManager = new ImageManager();
 
@@ -98,18 +75,15 @@ function draw() {
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             playTheGame();
             fill(0);
-            //rect(baseController, heightController, 100, 50);
+            rect(baseController, heightController, 100, 50);
             fill(130);
             rectMode(CORNER);
-            //rect(baseController - 75, heightController, 100, 50);
-            image(baseImg,baseController + 15, heightController + 20, 200,74)
+            rect(baseController - 75, heightController, 100, 50);
+            //image(baseImg,baseController + 15, heightController + 20, 200,74)
             pieces.forEach((element, i) => {
             element.show();
             element.move();
             if(element.getY() >=windowHeight){
-                pieces.splice(i, 1);
-            }
-            if(element.getCollision() === true && element.getId() == "Bomb"){
                 pieces.splice(i, 1);
             }
             if (toReset) {
@@ -119,6 +93,14 @@ function draw() {
                 });
             };
             });
+
+            bombs.forEach((element, i) => {
+                element.show();
+                element.move();
+                if(element.getCollision() === true) {
+                    pieces.splice(i, 1);
+                }
+            })
 
         if (isHead === true){
             socket.emit('mupi-endGame', {endGameInfo: true});
@@ -172,13 +154,13 @@ function pieceGenerator(){ //funcion para generar piezas
     let piece = Math.floor(random(1,4));
     switch(piece){
         case 1:
-            pieces.push(new HeadPiece(head1Img,head2Img,head3Img,head4Img))
+            pieces.push(new HeadPiece());
             break;
         case 2:
-            pieces.push(new ChestPiece(chest1Img,chest2Img,chest3Img,chest4Img))
+            pieces.push(new ChestPiece());
             break;
         case 3:
-            pieces.push(new Legspiece(legs1Img,legs2Img,legs3Img,legs4Img))
+            pieces.push(new Legspiece());
             break;
 
     }
@@ -189,205 +171,16 @@ function pieceGenerator(){ //funcion para generar piezas
 }
 function bombGenerator(){ //funcion para generar bombas 
 
-        pieces.push(new BombPiece(bombImage));
+        bombs.push(new BombPiece(bombImage));
 
     sleep(2000).then(function() {
         bombGenerator();
     })
 }
-
-class Piece {
-    constructor(){
-        this.x = random(0,windowWidth-70);
-        this.y = 0;
-        this.vel = 3;
-        this.collision = false; 
-        const rancolor = Math.floor(random(1,5))
-        this.colSelctor = rancolor
-        this.id = "generic";
-        this.isStacked = false;
-
-    }
-
-    show(){
-        switch(this.colSelctor){
-            case 1:
-                fill(255,255,0);
-                break;
-            case 2:
-                fill(206,71,96)
-                break;
-            case 3:
-                fill(107,15,26)
-                break;
-        }
-        //rect(this.x, this.y, 70, 20);
-    }
-
-
-    move(){
-
-        if (dist(this.y, this.x, pHeightController, this.x)<=20 && this.collision == false) {
-            if (dist(this.y, this.x, this.y, baseController)<=150) {
-                if(this.id =="Head"&&isHead === false && isBody === true) {
-                    isHead = true;
-                    this.collision = true;
-                    pHeightController = pHeightController - 20;
-                } else if (this.id =="Chest"&&isBody === false && isLeg === true){
-                    isBody = true;
-                    this.collision = true;
-                    pHeightController = pHeightController - 50;
-                } else if (this.id =="Legs"&&isLeg === false){
-                    isLeg = true;
-                    this.collision = true;
-                    pHeightController = pHeightController - 80;
-                } else if (this.id =="Bomb" && isHead === false){
-                    resetPieces();
-                    this.collision = true;
-                }
-            }
-        }
-
-        if (this.collision == false){
-            this.y += this.vel;
-        }else {
-            this.x = baseController -25; 
-            this.isStacked = true;
-        }
-    }
-    showEnd(x, y) { //aqui para mostrar cuando se haya armado y esté en la ultima pantalla del mupi
-        image(this.image,x,y);
-        
-    }
-
-    getX(){ return this.x}
-
-    getY(){ return this.y}
-
-    getIsStacked(){ return this.isStacked}
-
-    getCollision() { return this.collision}
-
-    getId() { return this.id}
-
-    setX(newX) { this.x = newX}
-    setY(newY) { this.y = newY}
-}
-
-class HeadPiece extends Piece {
-
-    constructor(){ 
-        super();
-        this.id = "Head";
-        this.image = imageManager.headGenerator()
-    }
-
-    show(){
-        image(this.image, this.x + 35, this.y -10)
-        switch(this.colSelctor){
-            case 1:
-                //image(this.image1,this.x + 35, this.y - 10,55,53)
-                fill(255,0,0)
-                break;
-            case 2:
-                //image(this.image2,this.x + 35, this.y - 10,55,53)
-                fill(95,10,135)
-                break;
-            case 3:
-                //image(this.image3,this.x + 37, this.y -15,55,75)
-                fill(161,181,216)
-                break;
-            case 4:
-                //image(this.image4,this.x + 35, this.y - 10,55,53)
-                fill(161,30,216)
-                break;
-        }
-        //rect(this.x, this.y, 70, 20);
-
-    }
-}
-
-class ChestPiece extends Piece {
-
-    constructor(){ 
-        super();
-        this.id = "Chest";
-        this.image = imageManager.chestGenerator()
-    }
-    show(){
-        image(this.image,this.x + 35, this.y - 10,125,111)
-        switch(this.colSelctor){
-            case 1:
-                //image(this.image1,this.x + 35, this.y - 10,125,111)
-                fill(255,0,0)
-                break;
-            case 2:
-                //image(this.image2,this.x + 35, this.y - 10,125,111)
-                fill(95,10,135)
-                break;
-            case 3:
-                //image(this.image3,this.x + 35, this.y - 10,125,111)
-                fill(161,181,216)
-                break;
-            case 4:
-                //image(this.image4,this.x + 35, this.y - 10,125,111)
-                fill(161,30,216)
-                break;
-        }
-        //rect(this.x, this.y, 70, 20);
-    }
-}
-
-class Legspiece extends Piece {
-
-    constructor(){ 
-        super();
-        this.id = "Legs";
-        this.image = imageManager.legsGenerator()
-    }
-    show(){
-        image(this.image,this.x + 35, this.y - 33,79,102)
-        switch(this.colSelctor){
-            case 1:
-                //image(this.image1,this.x + 35, this.y - 33,79,102)
-                fill(255,0,0)
-                break;
-            case 2:
-                //image(this.image2,this.x + 35, this.y - 33,79,102)
-                fill(95,10,135)
-                break;
-            case 3:
-                //image(this.image3,this.x + 35, this.y - 33,79,102)
-                fill(161,181,216)
-                break;
-            case 4:
-                //image(this.image4,this.x + 35, this.y - 33,79,102)
-                fill(161,30,216)
-                break;
-        }
-        //rect(this.x, this.y, 70, 20);
-    }
-}
-
-class BombPiece extends Piece {
-    constructor(image){ 
-        super();
-        this.id = "Bomb";
-        this.vel = 6;
-        this.image = image;
-    }
-
-    show(){ 
-        fill(0);
-        //rect(this.x, this.y, 70, 20);
-        image(this.image,this.x - 20, this.y - 40, 109,63)
-    }
-}
-
 function playTheGame() {
     if (generator){
         pieceGenerator();
-        //bombGenerator();
+        bombGenerator();
         generator = false;
     }
     
@@ -408,6 +201,7 @@ function startPiece() {
 
 function resetPieces() {
     pieces.splice(0, pieces.length);
+    bombs.splice(0, bombs.length);
             isHead = false;
             isBody = false;
             isLeg = false;
