@@ -1,5 +1,6 @@
 const express = require('express');
 const { Server } = require('socket.io');
+const { SerialPort, ReadlineParser } = require('serialport');
 const PORT = 5050; // No cambiar, tienes que ponerlo en ngrok también
 const SERVER_IP = '172.30.114.117'; // Cambiar por la IP del computador, tu comando es ifconfig en0
 
@@ -15,6 +16,8 @@ const httpServer = app.listen(PORT, () => {
     console.log(`http://${SERVER_IP}:${PORT}/app`);
     console.log(`http://${SERVER_IP}:${PORT}/mupi`);
 });
+
+
 // Run on terminal: ngrok http 5050;
 
 const io = new Server(httpServer, { path: '/real-time' });
@@ -38,7 +41,7 @@ io.on('connection', socket => {
 
     socket.on('mobile-screen', message => {
         console.log(message);
-    socket.broadcast.emit('mupi-screen', message)
+    socket.broadcast.emit('mupi-screen', message);
 });
 
 socket.on('mupi-endGame', message => {
@@ -47,8 +50,37 @@ socket.on('mupi-endGame', message => {
 
 socket.on('mobile-userInfo', message => {
     console.log(message);
-    socket.broadcast.emit('mupi-userInfo', message)
-})
+    socket.broadcast.emit('mupi-userInfo', message);
+});
+
+socket.broadcast.emit('arduino', arduinioMessage);
+
+});
+
+const protocolConfiguration = {
+    path: '/dev/cu.usbmodem112201',
+    baudRate: 9600
+}
+
+const port = new SerialPort(protocolConfiguration);
+const parser = port.pipe(new ReadlineParser());
+
+let arduinioMessage = {
+    botonA: false,
+    botonB: false,
+    distance: 0,
+
+}
+
+parser.on('data', (data) => {
+
+    // Create the array
+    let dataArray = data.split(' ');
+    arduinioMessage.botonA = dataArray[0];
+    arduinioMessage.botonB = dataArray[1];
+    arduinioMessage.distance = parseInt(dataArray[2]);
+
+    io.emit('arduino', arduinioMessage);
 
 });
 

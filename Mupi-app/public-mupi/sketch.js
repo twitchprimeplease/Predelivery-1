@@ -14,6 +14,9 @@ let baseHeight = 50;
 let isHead = false;
 let isBody = false;
 let isLeg = false;
+let arduinoinsA = 0;
+let arduinoinsB = 0;
+let arduinodistance = 0;
 
 let toReset = null;
 
@@ -66,10 +69,18 @@ function draw() {
     switch (screenController){
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+            if(arduinoinsA === 'A'){
+                screenController = 'InstructionsScreen'
+                arduinoinsA = 0;
+            }
             //image(QRImg,windowWidth/2, windowHeight/2 - 100, 221,221)
             break;
         case 'InstructionsScreen':
             image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+            if(arduinoinsA === 'A'){
+                screenController = 'PlayScreen'
+                arduinoinsA = 0;
+            }
             break;
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
@@ -104,6 +115,12 @@ function draw() {
 
         if (isHead === true){
             socket.emit('mupi-endGame', {endGameInfo: true});
+            bombs.splice(0, bombs.length);
+        }
+
+        if(arduinoinsA === 'A'){
+            screenController = 'EndGameScreen'
+            arduinoinsA = 0;
         }
             break;
         case 'EndGameScreen':
@@ -239,4 +256,17 @@ socket.on('mupi-screen', message => {
     const { screen } = message;
     screenController = screen;
     console.log(screenController);
+});
+
+socket.on('arduino', arduinioMessage => {
+    let { botonA } = arduinioMessage;
+    let { botonB } = arduinioMessage;
+    botonA = arduinoinsA;
+    botonB = arduinoinsB;
+
+    let { distance } = arduinioMessage;
+    if (distance < 100 ) {
+        baseController = (distance/100) * windowHeight;
+    }
+
 });

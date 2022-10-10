@@ -266,4 +266,6 @@ function sendUserInfo(){
 socket.on('mobile-endGame', message => {
     let { endGameInfo } = message;
     endGame = endGameInfo;
-})
+});
+
+
