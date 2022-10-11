@@ -2,7 +2,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { SerialPort, ReadlineParser } = require('serialport');
 const PORT = 5050; // No cambiar, tienes que ponerlo en ngrok también
-const SERVER_IP = '172.30.114.117'; // Cambiar por la IP del computador, tu comando es ifconfig en0
+const SERVER_IP = '192.168.68.255'; // Cambiar por la IP del computador, tu comando es ifconfig en0
 
 // const os = require('os');
 // const IPaddress = os.networkInterfaces().en0[1].address;
@@ -58,7 +58,7 @@ socket.broadcast.emit('arduino', arduinioMessage);
 });
 
 const protocolConfiguration = {
-    path: '/dev/cu.usbmodem112201',
+    path: '/dev/cu.usbmodem112401',
     baudRate: 9600
 }
 
@@ -74,12 +74,12 @@ let arduinioMessage = {
 
 parser.on('data', (data) => {
 
-    // Create the array
+
     let dataArray = data.split(' ');
+    
     arduinioMessage.botonA = dataArray[0];
     arduinioMessage.botonB = dataArray[1];
     arduinioMessage.distance = parseInt(dataArray[2]);
-
     io.emit('arduino', arduinioMessage);
 
 });

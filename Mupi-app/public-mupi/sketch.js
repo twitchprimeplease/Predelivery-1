@@ -17,6 +17,9 @@ let isLeg = false;
 let arduinoinsA = 0;
 let arduinoinsB = 0;
 let arduinodistance = 0;
+let disValues = [];
+let contador = 0;
+let prevPosition = 0;
 
 let toReset = null;
 
@@ -28,7 +31,7 @@ let playScreenImg;
 let endGameScreen;
 let baseImg;
 
-let screenController = 'PlayScreen';
+let screenController = 'StartScreen';
 let generator = true;
 let imageManager;
 
@@ -57,14 +60,15 @@ function setup() {
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController;
     background(255);
-    console.log(imageManager.chestGenerator());
-    
+
 }
 
 function draw() {
     background(255);
     newCursor(pmouseX, pmouseY,255);
     imageMode(CENTER);
+
+    
     
     switch (screenController){
         case 'StartScreen':
@@ -91,6 +95,7 @@ function draw() {
             rectMode(CORNER);
             rect(baseController - 75, heightController, 100, 50);
             //image(baseImg,baseController + 15, heightController + 20, 200,74)
+            //moveBaseController();
             pieces.forEach((element, i) => {
             element.show();
             element.move();
@@ -116,12 +121,17 @@ function draw() {
         if (isHead === true){
             socket.emit('mupi-endGame', {endGameInfo: true});
             bombs.splice(0, bombs.length);
+            if(arduinoinsA === 'A'){
+                screenController = 'EndGameScreen'
+                arduinoinsA = 0;
+            }
+            if(arduinoinsB === 'B'){
+                resetPieces();
+                arduinoinsB = 0;
+            }
         }
 
-        if(arduinoinsA === 'A'){
-            screenController = 'EndGameScreen'
-            arduinoinsA = 0;
-        }
+        
             break;
         case 'EndGameScreen':
 
@@ -147,10 +157,6 @@ function draw() {
 
 }
 
-function mousePressed(){
-
-}
-
 function mouseDragged() {
     socket.emit('positions', { controlX: pmouseX, controlY: pmouseY });
 }
@@ -164,8 +170,6 @@ function newCursor(x, y,color) {
     fill(color);
     ellipse(x, y, 10, 10);
 }
-
-
 
 function pieceGenerator(){ //funcion para generar piezas 
     let piece = Math.floor(random(1,4));
@@ -261,12 +265,43 @@ socket.on('mupi-screen', message => {
 socket.on('arduino', arduinioMessage => {
     let { botonA } = arduinioMessage;
     let { botonB } = arduinioMessage;
-    botonA = arduinoinsA;
-    botonB = arduinoinsB;
-
+    arduinoinsA = botonA;
+    arduinoinsB = botonB;
     let { distance } = arduinioMessage;
     if (distance < 100 ) {
-        baseController = (distance/100) * windowHeight;
+        baseController = (distance/100) * mupiWidth;
     }
+    //addToList(distance);
 
 });
+
+function addToList(value){
+    if(disValues.length < 3 && screenController === 'PlayScreen'){
+        disValues.push(value);
+        
+    }
+}
+
+function moveBaseController(){
+    if(disValues.length === 3){
+        let result = promedio(disValues);
+        
+        if (result != prevPosition) {
+            let newDis = (result/100) * mupiWidth
+            baseController = newDis;
+        prevPosition = newDis;
+        disValues.splice(1, disValues.length)
+        }else {
+            baseController = prevPosition;
+        }
+        
+    } 
+}
+
+function promedio(array) {
+    let i = 0, summ = 0, ArrayLen = array.length;
+    while (i < ArrayLen) {
+        summ = summ + array[i++];
+}
+    return summ / ArrayLen;
+}
