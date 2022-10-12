@@ -272,18 +272,25 @@ socket.on('arduino', arduinioMessage => {
         baseController = (distance/100) * mupiWidth;
     }
     //addToList(distance);
+    addToListDo(distance);
 
 });
 
+function addToListDo(value){
+    do {
+        disValues.push(value);
+    } while(disValues.length < 15 && screenController === 'PlayScreen')
+}
+
 function addToList(value){
-    if(disValues.length < 3 && screenController === 'PlayScreen'){
+    if(disValues.length < 15 && screenController === 'PlayScreen'){
         disValues.push(value);
         
     }
 }
 
 function moveBaseController(){
-    if(disValues.length === 3){
+    if(disValues.length === 15){
         let result = promedio(disValues);
         
         if (result != prevPosition) {

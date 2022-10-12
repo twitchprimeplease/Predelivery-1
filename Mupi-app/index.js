@@ -58,7 +58,7 @@ socket.broadcast.emit('arduino', arduinioMessage);
 });
 
 const protocolConfiguration = {
-    path: '/dev/cu.usbmodem112401',
+    path: '/dev/cu.usbmodem12201',
     baudRate: 9600
 }
 
