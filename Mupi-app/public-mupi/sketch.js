@@ -33,7 +33,7 @@ let baseImg;
 let endScreenImg;
 let goodbyeScreenImg;
 
-let screenController = 'EndScreen';
+let screenController = 'PlayScreen';
 let generator = true;
 let imageManager;
 
@@ -113,7 +113,7 @@ function draw() {
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             playTheGame();
-            image(baseImg, baseController + 12, heightController - 75, 180,275)
+            image(baseImg, baseController + 12, heightController - 60, 180,246)
             // fill(0);
             // rect(baseController, heightController, 100, 50);
             // fill(130);
@@ -172,9 +172,9 @@ function draw() {
             //     } 
             
             // });
-            yourLego[0].showEnd(windowWidth/2, windowHeight/2+200,157,206)
-            yourLego[1].showEnd(windowWidth/2, windowHeight/2,271,242)
-            yourLego[2].showEnd(windowWidth/2, windowHeight/2-20,271,242);
+            yourLego[0].showEnd(windowWidth/2, windowHeight/2+200,164,222);
+            yourLego[1].showEnd(windowWidth/2, windowHeight/2 + 68,302,255);
+            yourLego[2].showEnd(windowWidth/2, windowHeight/2-90,194,233);
             
             if(arduinoinsA === 'A'){
                 screenController = 'EndScreen'

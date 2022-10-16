@@ -7,8 +7,8 @@ class BombPiece extends Piece {
     }
 
     show(){ 
-        fill(0);
-        rect(this.x, this.y, 70, 20);
-        //image(this.image,this.x - 20, this.y - 40, 109,63)
+        // fill(0);
+        // rect(this.x, this.y, 70, 20);
+        image(this.image,this.x + 50, this.y,101,36)
     }
 }
