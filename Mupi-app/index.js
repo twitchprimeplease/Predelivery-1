@@ -76,10 +76,10 @@ parser.on('data', (data) => {
 
 
     let dataArray = data.split(' ');
-    
     arduinioMessage.botonA = dataArray[0];
     arduinioMessage.botonB = dataArray[1];
     arduinioMessage.distance = parseInt(dataArray[2]);
+    console.log(arduinioMessage);
     io.emit('arduino', arduinioMessage);
 
 });

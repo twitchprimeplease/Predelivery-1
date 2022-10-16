@@ -30,22 +30,30 @@ let instructionsScreenImg;
 let playScreenImg;
 let endGameScreen;
 let baseImg;
+let endScreenImg;
+let goodbyeScreenImg;
 
-let screenController = 'StartScreen';
+let screenController = 'EndScreen';
 let generator = true;
 let imageManager;
+
+let tryHead;
+let tryChest;
+let tryLegs;
 
 
 function preload(){
     bombImage = loadImage('./Images/img_bomb.png')
-    StartScreenImg = loadImage('./Images/StartScreen_Mupi.jpeg')
+    StartScreenImg = loadImage('./Images/StartScreen_Mupi.png')
     QRImg = loadImage('./Images/QR_Mupi.png')
     instructionsScreen = loadImage('./Images/InstructionsScreen_Mupi.png');
+    instructionsScreen2 = loadImage('./Images/InstructionsScreen2_Mupi.png');
     playScreenImg = loadImage('./Images/PlayScreen_Mupi.png');
     endGameScreen = loadImage('./Images/EndGameScreen_Mupi.png');
     baseImg = loadImage('./Images/img_base.png');
     imageManager = new ImageManager();
-
+    endScreenImg = loadImage('./Images/EndScreen_Mupi.png');
+    goodbyeScreenImg = loadImage('./Images/GoodbyeScreen_Mupi.png');
 }
 
 function setup() {
@@ -60,6 +68,11 @@ function setup() {
     heightController = windowHeight - (windowHeight / 10);
     pHeightController = heightController;
     background(255);
+    tryHead = new HeadPiece ();
+    tryChest = new ChestPiece ();
+    tryLegs = new Legspiece ();
+
+
 
 }
 
@@ -74,28 +87,38 @@ function draw() {
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             if(arduinoinsA === 'A'){
-                screenController = 'InstructionsScreen'
+                screenController = 'InstructionsScreen1'
                 arduinoinsA = 0;
             }
-            //image(QRImg,windowWidth/2, windowHeight/2 - 100, 221,221)
+            
             break;
-        case 'InstructionsScreen':
+        case 'InstructionsScreen1':
             image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             if(arduinoinsA === 'A'){
-                screenController = 'PlayScreen'
+                screenController = 'InstructionsScreen2'
                 arduinoinsA = 0;
             }
             break;
+            case 'InstructionsScreen2':
+                image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+                if(arduinoinsA === 'A'){
+                    screenController = 'PlayScreen'
+                    arduinoinsA = 0;
+                }
+                if(arduinoinsA === 'B'){
+                    screenController = 'InstructionsScreen1'
+                    arduinoinsA = 0;
+                }
+                break;
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             playTheGame();
-            fill(0);
-            rect(baseController, heightController, 100, 50);
-            fill(130);
-            rectMode(CORNER);
-            rect(baseController - 75, heightController, 100, 50);
-            //image(baseImg,baseController + 15, heightController + 20, 200,74)
-            //moveBaseController();
+            image(baseImg, baseController + 12, heightController - 75, 180,275)
+            // fill(0);
+            // rect(baseController, heightController, 100, 50);
+            // fill(130);
+            // rectMode(CORNER);
+            // rect(baseController - 75, heightController, 100, 50);
             pieces.forEach((element, i) => {
             element.show();
             element.move();
@@ -136,27 +159,43 @@ function draw() {
         case 'EndGameScreen':
 
             image(endGameScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-            let yourLego = [];
-            pieces.forEach((element, i) => {
-                if(element.getIsStacked() != true){
-                    pieces.splice(i, 1);
-                } else if (element.getIsStacked() === true){
-                    yourLego.push(element);
-                } 
+            let yourLego = [
+                tryLegs,
+                tryChest,
+                tryHead,
+            ];
+            // pieces.forEach((element, i) => {
+            //     if(element.getIsStacked() != true){
+            //         pieces.splice(i, 1);
+            //     } else if (element.getIsStacked() === true){
+            //         yourLego.push(element);
+            //     } 
             
-            });
-            yourLego[0].showEnd(windowWidth/2, windowHeight/2+225)
-            yourLego[1].showEnd(windowWidth/2, windowHeight/2+95)
-            yourLego[2].showEnd(windowWidth/2, windowHeight/2-20)
+            // });
+            yourLego[0].showEnd(windowWidth/2, windowHeight/2+200,157,206)
+            yourLego[1].showEnd(windowWidth/2, windowHeight/2,271,242)
+            yourLego[2].showEnd(windowWidth/2, windowHeight/2-20,271,242);
+            
+            if(arduinoinsA === 'A'){
+                screenController = 'EndScreen'
+                arduinoinsA = 0;
+            }
             break;
+            case 'EndScreen':
+                image(endScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+                image(QRImg,windowWidth/2, windowHeight/2 - 30, 221,221)
+                if(arduinoinsB === 'B'){
+                    screenController = 'GoodbyeScreen'
+                    arduinoinsB = 0;
+                }
+                break;
             case 'GoodbyeScreen':
-            screenController = 'StartScreen';
+                image(goodbyeScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
                 break;
             
     }
 
 }
-
 function mouseDragged() {
     socket.emit('positions', { controlX: pmouseX, controlY: pmouseY });
 }
@@ -271,7 +310,6 @@ socket.on('arduino', arduinioMessage => {
     if (distance < 100 ) {
         baseController = (distance/100) * mupiWidth;
     }
-    //addToList(distance);
     addToListDo(distance);
 
 });

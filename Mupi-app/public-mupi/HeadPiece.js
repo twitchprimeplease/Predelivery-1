@@ -7,7 +7,9 @@ class HeadPiece extends Piece {
     }
 
     show(){
-        image(this.image, this.x + 35, this.y -10)
+        image(this.image, this.x + 35, this.y -10);
+        fill(161,181,216);
+        //circle(this.x +35,this.y,75);
         switch(this.colSelctor){
             case 1:
                 fill(255,0,0)
@@ -25,4 +27,6 @@ class HeadPiece extends Piece {
         //rect(this.x, this.y, 70, 20);
 
     }
+
+
 }

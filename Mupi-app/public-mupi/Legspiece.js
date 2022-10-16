@@ -6,7 +6,8 @@ class Legspiece extends Piece {
         this.image = imageManager.legsGenerator()
     }
     show(){
-        image(this.image,this.x + 35, this.y - 33,79,102)
+        image(this.image,this.x + 35, this.y - 33,79,102);
+        //circle(this.x + 35, this.y,75);
         switch(this.colSelctor){
             case 1:
                 //image(this.image1,this.x + 35, this.y - 33,79,102)

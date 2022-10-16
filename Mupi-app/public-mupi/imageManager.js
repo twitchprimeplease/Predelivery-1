@@ -34,17 +34,17 @@ class ImageManager {
     }
 
     headGenerator(){ 
-        const rNumber = Math.floor(random(0, this.headImages.length - 1));
+        const rNumber = Math.floor(random(0, this.headImages.length));
         return this.headImages[rNumber];
     }
 
     chestGenerator(){
-        const rNumber = Math.floor(random(0, this.chestImages.length - 1));
+        const rNumber = Math.floor(random(0, this.chestImages.length));
         return this.chestImages[rNumber];
     }
 
     legsGenerator(){ 
-        const rNumber = Math.floor(random(0, this.legsImages.length - 1));
+        const rNumber = Math.floor(random(0, this.legsImages.length));
         return this.legsImages[rNumber];
     }
 

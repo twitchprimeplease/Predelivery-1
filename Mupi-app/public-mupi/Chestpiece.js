@@ -6,7 +6,8 @@ class ChestPiece extends Piece {
         this.image = imageManager.chestGenerator()
     }
     show(){
-        image(this.image,this.x + 35, this.y - 10,125,111)
+        image(this.image,this.x + 35, this.y - 10,125,111);
+        //circle(this.x + 35,this.y,75);
         switch(this.colSelctor){
             case 1:
                 //image(this.image1,this.x + 35, this.y - 10,125,111)

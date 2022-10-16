@@ -57,8 +57,8 @@ class Piece {
             this.isStacked = true;
         }
     }
-    showEnd(x, y) { //aqui para mostrar cuando se haya armado y esté en la ultima pantalla del mupi
-        image(this.image,x,y);
+    showEnd(x, y, width, height) { //aqui para mostrar cuando se haya armado y esté en la ultima pantalla del mupi
+        image(this.image,x,y, width, height);
         
     }
 
