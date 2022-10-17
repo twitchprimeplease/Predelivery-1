@@ -8,7 +8,7 @@ let controllerX, controllerY = 0;
 let interactions = 0;
 let isTouched = false;
 let baseController = 0;
-let screenController = 'StartScreen';
+let screenController = 'EndGameScreen';
 let visualbtn = true;
 let startScreen;
 let instructionsScreen;
@@ -124,7 +124,7 @@ function draw() {
             
             break;
             case 'EndGameScreen':
-                image(endGameScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
+                image(endGameScreenImg,windowWidth/2, windowHeight/2,375,820);
                 userInput.style('display', 'block');
                 emailInput.style('display', 'block');
                 sendBottom.style('display', 'block');
@@ -135,7 +135,7 @@ function draw() {
                 text('E-Mail',(windowWidth / 2) - 100, windowHeight - 240)
                 break;
             case 'WarningScreen':
-                image(warningScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
+                image(warningScreenImg,windowWidth/2, windowHeight/2);
                 warningScreen.show();
                 
                 break;
@@ -145,7 +145,7 @@ function draw() {
                 userInput.style('display', 'none');
                 sendBottom.style('display', 'none');
                 fill(255);
-                image(goodScreenImg,windowWidth/2, windowHeight/2,windowWidth,windowWidth*(16/9));
+                image(goodScreenImg,windowWidth/2, windowHeight/2);
                 break;
     }
 }
@@ -207,26 +207,26 @@ function touchEnded() {
 }
 
 function deviceMoved() {
-    switch (interactions) {
-        case 1:
-            socket.emit('mobile-instructions', {
-                interactions,
-                pAccelerationX,
-                pAccelerationY,
-                pAccelerationZ
-            });
-            background(0, 255, 255);
-            break;
-        case 2:
-            socket.emit('mobile-instructions', {
-                interactions,
-                rotationX,
-                rotationY,
-                rotationZ
-            });
-            background(0, 255, 0);
-            break;
-    }
+    // switch (interactions) {
+    //     case 1:
+    //         socket.emit('mobile-instructions', {
+    //             interactions,
+    //             pAccelerationX,
+    //             pAccelerationY,
+    //             pAccelerationZ
+    //         });
+    //         background(0, 255, 255);
+    //         break;
+    //     case 2:
+    //         socket.emit('mobile-instructions', {
+    //             interactions,
+    //             rotationX,
+    //             rotationY,
+    //             rotationZ
+    //         });
+    //         background(0, 255, 0);
+    //         break;
+    //}
 
 }
 
