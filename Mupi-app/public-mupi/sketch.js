@@ -41,6 +41,11 @@ let tryHead;
 let tryChest;
 let tryLegs;
 
+let explotion = false;
+let explotionImg;
+let temporalExp;
+let temporalX;
+let temporalY;
 
 function preload(){
     bombImage = loadImage('./Images/img_bomb.png')
@@ -54,6 +59,7 @@ function preload(){
     imageManager = new ImageManager();
     endScreenImg = loadImage('./Images/EndScreen_Mupi.png');
     goodbyeScreenImg = loadImage('./Images/GoodbyeScreen_Mupi.png');
+    explotionImg = loadImage('./Images/explotion/explotion.gif')
 }
 
 function setup() {
@@ -132,15 +138,19 @@ function draw() {
                 });
             };
             });
-
+            
             bombs.forEach((element, i) => {
                 element.show();
                 element.move();
                 if(element.getCollision() === true) {
+                    temporalX = element.getX() + 50;
+                    temporalY = element.getY();
+                    explotion = true;
+                    
                     pieces.splice(i, 1);
                 }
-            })
-
+            });
+            animateExplotions(temporalX,temporalY);
         if (isHead === true){
             socket.emit('mupi-endGame', {endGameInfo: true});
             bombs.splice(0, bombs.length);
@@ -159,19 +169,15 @@ function draw() {
         case 'EndGameScreen':
 
             image(endGameScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-            let yourLego = [
-                tryLegs,
-                tryChest,
-                tryHead,
-            ];
-            // pieces.forEach((element, i) => {
-            //     if(element.getIsStacked() != true){
-            //         pieces.splice(i, 1);
-            //     } else if (element.getIsStacked() === true){
-            //         yourLego.push(element);
-            //     } 
+            let yourLego = [];
+            pieces.forEach((element, i) => {
+                if(element.getIsStacked() != true){
+                    pieces.splice(i, 1);
+                } else if (element.getIsStacked() === true){
+                    yourLego.push(element);
+                } 
             
-            // });
+            });
             yourLego[0].showEnd(windowWidth/2, windowHeight/2+200,164,222);
             yourLego[1].showEnd(windowWidth/2, windowHeight/2 + 68,302,255);
             yourLego[2].showEnd(windowWidth/2, windowHeight/2-90,194,233);
@@ -258,6 +264,17 @@ function startPiece() {
         startPiece();
     });
 };
+
+function animateExplotions(x,y) {
+    if(explotion){
+    image(explotionImg,x,y);
+    temporalExp = setTimeout(() => {
+        explotion = false;
+    },1000)
+    }
+    
+}
+
 
 function resetPieces() {
     pieces.splice(0, pieces.length);
