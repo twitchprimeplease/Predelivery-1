@@ -93,17 +93,17 @@ function draw() {
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
             if(arduinoinsA === 'A'){
-                screenController = 'InstructionsScreen1'
+                screenController = 'InstructionsScreen2'
                 arduinoinsA = 0;
             }
             
             break;
-        case 'InstructionsScreen1':
-            image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-            if(arduinoinsA === 'A'){
-                screenController = 'InstructionsScreen2'
-                arduinoinsA = 0;
-            }
+        // case 'InstructionsScreen1':
+        //     image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+        //     if(arduinoinsA === 'A'){
+        //         screenController = 'InstructionsScreen2'
+        //         arduinoinsA = 0;
+        //     }
             break;
             case 'InstructionsScreen2':
                 image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
@@ -111,10 +111,10 @@ function draw() {
                     screenController = 'PlayScreen'
                     arduinoinsA = 0;
                 }
-                if(arduinoinsA === 'B'){
-                    screenController = 'InstructionsScreen1'
-                    arduinoinsA = 0;
-                }
+                // if(arduinoinsB === 'B'){
+                //     screenController = 'InstructionsScreen1'
+                //     arduinoinsB = 0;
+                // }
                 break;
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
