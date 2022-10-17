@@ -11,4 +11,24 @@ class BombPiece extends Piece {
         // rect(this.x, this.y, 70, 20);
         image(this.image,this.x + 50, this.y,101,36)
     }
+
+    move(){
+
+        if (dist(this.y, this.x, heightController, this.x)<=20 && this.collision == false) {
+            if (dist(this.y, this.x, this.y, baseController)<=150) {
+                if (this.id =="Bomb" && isHead === false){
+
+                    resetPieces();
+                    this.collision = true;
+                }
+            }
+        }
+
+        if (this.collision == false){
+            this.y += this.vel;
+        }else {
+            this.x = baseController -25; 
+            this.isStacked = true;
+        }
+    }
 }

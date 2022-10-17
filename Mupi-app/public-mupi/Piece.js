@@ -43,10 +43,6 @@ class Piece {
                     isLeg = true;
                     this.collision = true;
                     pHeightController = pHeightController - 80;
-                } else if (this.id =="Bomb" && isHead === false){
-
-                    resetPieces();
-                    this.collision = true;
                 }
             }
         }
