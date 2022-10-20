@@ -32,8 +32,11 @@ let endGameScreen;
 let baseImg;
 let endScreenImg;
 let goodbyeScreenImg;
+let insEnd;
+let legoins1;
+let legoins2;
 
-let screenController = 'PlayScreen';
+let screenController = 'StartScreen';
 let generator = true;
 let imageManager;
 
@@ -59,7 +62,10 @@ function preload(){
     imageManager = new ImageManager();
     endScreenImg = loadImage('./Images/EndScreen_Mupi.png');
     goodbyeScreenImg = loadImage('./Images/GoodbyeScreen_Mupi.png');
-    explotionImg = loadImage('./Images/explotion/explotion.gif')
+    explotionImg = loadImage('./Images/explotion/explotion.gif');
+    legoins1 = loadImage('./Images/legoins1.gif');
+    legoins2 = loadImage('./Images/legoins2.gif');
+    insEnd = loadImage('./Images/insEnd.png')
 }
 
 function setup() {
@@ -92,29 +98,40 @@ function draw() {
     switch (screenController){
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+
             if(arduinoinsA === 'A'){
-                screenController = 'InstructionsScreen2'
+                screenController = 'InstructionsScreen1'
                 arduinoinsA = 0;
             }
             
             break;
-        // case 'InstructionsScreen1':
-        //     image(instructionsScreen,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-        //     if(arduinoinsA === 'A'){
-        //         screenController = 'InstructionsScreen2'
-        //         arduinoinsA = 0;
-        //     }
+        case 'InstructionsScreen1':
+            image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+            imageMode(CORNER);
+                image(legoins1,0,0,windowWidth, windowHeight);
+                imageMode(CENTER);
+            if(arduinoinsA === 'A'){
+            screenController = 'InstructionsScreen2';
+            arduinoinsA = 0;
+            }
+            if(arduinoinsB === 'B'){
+                screenController = 'InstructionsScreen2';
+                arduinoinsB = 0;
+            }
             break;
             case 'InstructionsScreen2':
                 image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+                imageMode(CORNER);
+                image(legoins2,0,0,windowWidth, windowHeight);
+                imageMode(CENTER);
                 if(arduinoinsA === 'A'){
-                    screenController = 'PlayScreen'
+                    screenController = 'PlayScreen';
                     arduinoinsA = 0;
                 }
-                // if(arduinoinsB === 'B'){
-                //     screenController = 'InstructionsScreen1'
-                //     arduinoinsB = 0;
-                // }
+                if(arduinoinsB === 'B'){
+                    screenController = 'PlayScreen';
+                    arduinoinsB = 0;
+                }
                 break;
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
@@ -155,13 +172,14 @@ function draw() {
             socket.emit('mupi-endGame', {endGameInfo: true});
             bombs.splice(0, bombs.length);
             if(arduinoinsA === 'A'){
-                screenController = 'EndGameScreen'
+                resetPieces();
                 arduinoinsA = 0;
             }
             if(arduinoinsB === 'B'){
-                resetPieces();
+                screenController = 'EndGameScreen'
                 arduinoinsB = 0;
             }
+            image(insEnd,windowWidth/2, 200, 401,201);
         }
 
         
