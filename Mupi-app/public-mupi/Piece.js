@@ -71,4 +71,5 @@ class Piece {
 
     setX(newX) { this.x = newX}
     setY(newY) { this.y = newY}
+    setVel(newVel) { this.vel = newVel}
 }

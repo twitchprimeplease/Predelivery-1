@@ -1,13 +1,19 @@
 const express = require('express');
+const cors = require("cors");
+const { FireStoreDB } = require("./firebase-config.js");
 const { Server } = require('socket.io');
 const { SerialPort, ReadlineParser } = require('serialport');
 const PORT = 5050; // No cambiar, tienes que ponerlo en ngrok también
-const SERVER_IP = '192.168.68.255'; // Cambiar por la IP del computador, tu comando es ifconfig en0
+const SERVER_IP = '172.30.114.117'; // Cambiar por la IP del computador, tu comando es ifconfig en0
 
 // const os = require('os');
 // const IPaddress = os.networkInterfaces().en0[1].address;
 
+const leadsCollection = new FireStoreDB('Leads')
+const installationCollection = new FireStoreDB('Installation')
+
 const app = express();
+app.use(cors({ origin: "*" }))
 app.use(express.json());
 app.use('/app', express.static('public-app'));
 app.use('/mupi', express.static('public-mupi'));
@@ -17,6 +23,48 @@ const httpServer = app.listen(PORT, () => {
     console.log(`http://${SERVER_IP}:${PORT}/mupi`);
 });
 
+app.get('/leads', (request, response) => {
+    timeStamp();
+    leadsCollection.getCollection()
+        .then((leads) => {
+            console.log(leads);
+            response.send(leads);
+        })
+})
+
+app.get('/installations', (request, response) => {
+    timeStamp();
+    installationCollection.getCollection()
+        .then((installations) => {
+            console.log(installations); 
+            response.send(installations);
+        })
+})
+
+app.post('/add-new-lead', (request, response) => {
+    timeStamp();
+    console.log(request.body);
+    request.body.timeStamp = timeStamp();
+    leadsCollection.addNewDocument(request.body);
+    response.status(200).end();
+})
+
+app.post('/add-new-game', (request, response) => {
+    timeStamp();
+    console.log(request.body);
+    request.body.timeStamp = timeStamp();
+    installationCollection.addNewDocument(request.body);
+    response.status(200).end();
+})
+
+
+function timeStamp() {
+    let date = new Date();
+    let [month, day, year] = [date.getMonth() + 1, date.getDate(), date.getFullYear()];
+    let [hour, minutes, seconds] = [date.getHours(), date.getMinutes(), date.getSeconds()];
+    console.log(`${hour}:${minutes}:${seconds} - ${month}/${day}/${year}`);
+    return `${hour}:${minutes}:${seconds} - ${month}/${day}/${year}`
+}
 
 // Run on terminal: ngrok http 5050;
 

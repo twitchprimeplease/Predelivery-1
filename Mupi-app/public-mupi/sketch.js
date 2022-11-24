@@ -5,8 +5,12 @@ console.log('Server IP: ', NGROK);
 let deviceWidth, deviceHeight = 0;
 let mupiWidth, mupiHeight = 0;
 let baseController = 0;
+
 let pieces = [];
-let bombs = [];
+let bombs = []; 
+let practiceBombs = [];
+let practicePieces = [];
+
 let heightController = 0;
 let pHeightController = 0;
 let baseWeight = 200;
@@ -21,6 +25,17 @@ let disValues = [];
 let contador = 0;
 let prevPosition = 0;
 
+let tutoMove = true;
+let tutoBombs = true;
+let tutoPieces = true;
+let tutotext1 = false;
+let tutotext2 = false;
+let tutotext3 = false;
+let tutotext4 = false;
+let tutotext5 = false;
+let tutotext6 = false;
+let temporalpieces = false;
+
 let toReset = null;
 
 let bombImage;
@@ -33,8 +48,10 @@ let baseImg;
 let endScreenImg;
 let goodbyeScreenImg;
 let insEnd;
-let legoins1;
-let legoins2;
+let imgInsBomb;
+let insContinue;
+let insMovement;
+let insPieces;
 
 let screenController = 'StartScreen';
 let generator = true;
@@ -50,6 +67,11 @@ let temporalExp;
 let temporalX;
 let temporalY;
 
+let installation = {
+    name: "Jardin Plaza",
+    reason: "new game"
+}
+
 function preload(){
     bombImage = loadImage('./Images/img_bomb.png')
     StartScreenImg = loadImage('./Images/StartScreen_Mupi.png')
@@ -63,9 +85,11 @@ function preload(){
     endScreenImg = loadImage('./Images/EndScreen_Mupi.png');
     goodbyeScreenImg = loadImage('./Images/GoodbyeScreen_Mupi.png');
     explotionImg = loadImage('./Images/explotion/explotion.gif');
-    legoins1 = loadImage('./Images/legoins1.gif');
-    legoins2 = loadImage('./Images/legoins2.gif');
-    insEnd = loadImage('./Images/insEnd.png')
+    insEnd = loadImage('./Images/insEnd.png');
+    imgInsBomb = loadImage('./Images/InsBomb1.png');
+    insContinue = loadImage('./Images/InsContinue.png');
+    insMovement = loadImage('./Images/InsMovement.png');
+    insPieces = loadImage('./Images/insPieces.png')
 }
 
 function setup() {
@@ -84,54 +108,157 @@ function setup() {
     tryChest = new ChestPiece ();
     tryLegs = new Legspiece ();
 
-
-
 }
 
 function draw() {
     background(255);
     newCursor(pmouseX, pmouseY,255);
     imageMode(CENTER);
+    if (toReset) {
+        resetPieces();
+        sleep(1000).then(function() {
+            toReset = false;
+        });
+    };
 
-    
-    
+    moveBaseController();
+
     switch (screenController){
         case 'StartScreen':
             image(StartScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-
             if(arduinoinsA === 'A'){
                 screenController = 'InstructionsScreen1'
                 arduinoinsA = 0;
+                //sendInstallationInfo(installation);
             }
             
             break;
         case 'InstructionsScreen1':
             image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-            imageMode(CORNER);
-                image(legoins1,0,0,windowWidth, windowHeight);
-                imageMode(CENTER);
-            if(arduinoinsA === 'A'){
-            screenController = 'InstructionsScreen2';
-            arduinoinsA = 0;
-            }
-            if(arduinoinsB === 'B'){
-                screenController = 'InstructionsScreen2';
-                arduinoinsB = 0;
-            }
-            break;
-            case 'InstructionsScreen2':
-                image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
-                imageMode(CORNER);
-                image(legoins2,0,0,windowWidth, windowHeight);
-                imageMode(CENTER);
+            image(baseImg, baseController + 12, heightController - 60, 180,246);
+
+            if(tutotext1){
+                image(insContinue ,windowWidth/2, windowHeight/3)
+
                 if(arduinoinsA === 'A'){
-                    screenController = 'PlayScreen';
+                    screenController = 'InstructionScreen2';
                     arduinoinsA = 0;
                 }
-                if(arduinoinsB === 'B'){
-                    screenController = 'PlayScreen';
-                    arduinoinsB = 0;
+            }
+            if(tutotext6){
+                image(insMovement, windowWidth/2, windowHeight/3)
+            }
+            
+            if(tutoMove === true && baseController != mupiHeight/ + 12){
+                tutoMove = false;
+                setTimeout(()=>{
+                    tutotext6 = true;
+                },2000)
+                setTimeout(()=>{
+                    tutotext1 = true;
+                    tutotext6 = false;
+                    console.log("Press")
+                }, 7000)
+            }
+            break;
+            case 'InstructionScreen2':
+                image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+            image(baseImg, baseController + 12, heightController - 60, 180,246);
+                if(tutotext4){
+                    image(insPieces , windowWidth/2, windowHeight/3)
+                    
                 }
+
+                if(tutotext5){
+                    image(insContinue ,windowWidth/2, windowHeight/3)
+                    if(arduinoinsA === 'A'){
+                        screenController = 'InstructionsScreen3';
+                        arduinoinsA = 0;
+                    }
+                }
+                
+                if(tutoPieces){
+                    tutoPieces = false;
+                    practicePieceGenerator();
+                    setTimeout(()=>{
+                        tutotext4 = true;
+                    },2000);
+                    setTimeout(()=>{
+                        tutotext4 = false;
+                        tutotext5 = true;
+                    },15000)
+                }
+
+                practicePieces.forEach((element, i) => {
+                    element.show();
+                    element.move();
+                    if(element.getY() >=windowHeight){
+                        practicePieces.splice(i, 1);
+                    }
+                    
+                    });
+            break;
+
+            case 'InstructionsScreen3':
+                image(instructionsScreen2,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
+                image(baseImg, baseController + 12, heightController - 60, 180,246);   
+                    
+                    if (temporalpieces === false){
+                        practiceBombs.splice(0, practiceBombs.length);
+                        practicePieces.splice(0, practicePieces.length);
+                    }
+                practicePieces.forEach((element, i) => {
+                    element.show();
+                    element.move();
+                    if(element.getY() >=windowHeight){
+                        practicePieces.splice(i, 1);
+                    }
+                });
+                practiceBombs.forEach((element, i) => {
+                    element.show();
+                    element.move();
+                    element.setVel(2);
+                    if(element.getCollision() === true) {
+                        temporalX = element.getX() + 50;
+                        temporalY = element.getY();
+                        explotion = true;
+                        
+                        practiceBombs.splice(i, 1);
+                    }
+                    if(element.getY() >=windowHeight){
+                        practiceBombs.splice(i, 1);
+                    }
+                });
+                animateExplotions(temporalX,temporalY);
+                if (tutotext2){
+                    image(imgInsBomb, windowWidth/2, windowHeight/3)
+                }
+                if(tutotext3){
+                    image(insContinue ,windowWidth/2, windowHeight/3)
+                    if(arduinoinsA === 'A'){
+                        screenController = 'PlayScreen';
+                        arduinoinsA = 0;
+                    }
+                }
+
+                if(tutoBombs){
+                    tutoBombs = false;
+                    temporalpieces = true;
+                    practiceBombGenerator();
+                    resetPieces();
+                    setTimeout(()=>{
+                        tutotext2 = true;
+                    },2000)
+                    setTimeout(()=>{
+                        tutotext2 = false;
+                    },9000)
+                    setTimeout(()=>{
+                        tutotext3 = true;
+                        console.log("Press")
+                        temporalpieces = false
+                    }, 25000)
+                }
+
                 break;
         case 'PlayScreen':
             image(playScreenImg,windowWidth/2, windowHeight/2,windowWidth ,(windowWidth)*(3/2));
@@ -148,12 +275,7 @@ function draw() {
             if(element.getY() >=windowHeight){
                 pieces.splice(i, 1);
             }
-            if (toReset) {
-                resetPieces();
-                sleep(1000).then(function() {
-                    toReset = false;
-                });
-            };
+            
             });
             
             bombs.forEach((element, i) => {
@@ -164,7 +286,10 @@ function draw() {
                     temporalY = element.getY();
                     explotion = true;
                     
-                    pieces.splice(i, 1);
+                    bombs.splice(i, 1);
+                }
+                if(element.getY() >=windowHeight){
+                    bombs.splice(i, 1);
                 }
             });
             animateExplotions(temporalX,temporalY);
@@ -172,14 +297,15 @@ function draw() {
             socket.emit('mupi-endGame', {endGameInfo: true});
             bombs.splice(0, bombs.length);
             if(arduinoinsA === 'A'){
-                resetPieces();
+                
+                screenController = 'EndGameScreen'
                 arduinoinsA = 0;
             }
             if(arduinoinsB === 'B'){
-                screenController = 'EndGameScreen'
+                resetPieces();
                 arduinoinsB = 0;
             }
-            image(insEnd,windowWidth/2, 200, 401,201);
+            image(insEnd,windowWidth/2, windowHeight/3, (3*windowWidth)/4, windowHeight*0.24);
         }
 
         
@@ -261,12 +387,44 @@ function bombGenerator(){ //funcion para generar bombas
         bombGenerator();
     })
 }
+
+function practicePieceGenerator(){ //funcion para generar piezas 
+    let piece = Math.floor(random(1,4));
+    switch(piece){
+        case 1:
+            practicePieces.push(new HeadPiece());
+            break;
+        case 2:
+            practicePieces.push(new ChestPiece());
+            break;
+        case 3:
+            practicePieces.push(new Legspiece());
+            break;
+
+    }
+
+    sleep(2500).then(function() {
+        practicePieceGenerator();
+    })
+}
+
+function practiceBombGenerator(){ //funcion para generar bombas 
+
+    practiceBombs.push(new BombPiece(bombImage));
+
+sleep(4000).then(function() {
+    practiceBombGenerator();
+})
+}
+
+
 function playTheGame() {
     if (generator){
         pieceGenerator();
         bombGenerator();
         generator = false;
     }
+
     
 }
 
@@ -295,6 +453,8 @@ function animateExplotions(x,y) {
 
 
 function resetPieces() {
+    practicePieces.splice(0, practicePieces.length);
+    practiceBombs.splice(0,practiceBombs.length);
     pieces.splice(0, pieces.length);
     bombs.splice(0, bombs.length);
             isHead = false;
@@ -342,9 +502,9 @@ socket.on('arduino', arduinioMessage => {
     arduinoinsA = botonA;
     arduinoinsB = botonB;
     let { distance } = arduinioMessage;
-    if (distance < 100 ) {
-        baseController = (distance/100) * mupiWidth;
-    }
+    // if (distance < 100 ) {
+    //     baseController = (distance/100) * mupiWidth;
+    // }
     addToListDo(distance);
 
 });
@@ -352,15 +512,21 @@ socket.on('arduino', arduinioMessage => {
 function addToListDo(value){
     do {
         disValues.push(value);
-    } while(disValues.length < 15 && screenController === 'PlayScreen')
+    } while(disValues.length < 15 && screenController === 'PlayScreen'|| 
+    disValues.length < 15 && screenController === 'InstructionsScreen1'||
+    disValues.length < 15 && screenController === 'InstructionScreen2'||
+    disValues.length < 15 && screenController === 'InstructionsScreen3')
 }
 
 function addToList(value){
-    if(disValues.length < 15 && screenController === 'PlayScreen'){
+    if(disValues.length < 15 && screenController === 'PlayScreen'|| 
+    disValues.length < 15 && screenController === 'InstructionsScreen1'||
+    disValues.length < 15 && screenController === 'InstructionScreen2'||
+    disValues.length < 15 && screenController === 'InstructionsScreen3'){
         disValues.push(value);
         
     }
-}
+} 
 
 function moveBaseController(){
     if(disValues.length === 15){
@@ -375,7 +541,10 @@ function moveBaseController(){
             baseController = prevPosition;
         }
         
-    } 
+    } else if (disValues.length > 15){
+        disValues.splice(14, disValues.length - 15)
+        
+    }
 }
 
 function promedio(array) {
@@ -384,4 +553,15 @@ function promedio(array) {
         summ = summ + array[i++];
 }
     return summ / ArrayLen;
+}
+
+async function sendInstallationInfo(lead) {
+    const request = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(lead),
+    }
+    await fetch("http://localhost:5050/add-new-game", request)
 }

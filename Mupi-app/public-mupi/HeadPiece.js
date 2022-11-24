@@ -4,6 +4,7 @@ class HeadPiece extends Piece {
         super();
         this.id = "Head";
         this.image = imageManager.headGenerator()
+        //this.soundeffect = soundManager.bombsound()
     }
 
     show(){
@@ -29,5 +30,8 @@ class HeadPiece extends Piece {
 
     }
 
+    /*
+    playSoundeffect(){ play(this.soundeffect)}
 
+    */
 }

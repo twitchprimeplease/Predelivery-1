@@ -4,6 +4,7 @@ class BombPiece extends Piece {
         this.id = "Bomb";
         this.vel = 3;
         this.image = image;
+        //this.soundeffect = soundManager.bombsound()
     }
 
     show(){ 
@@ -17,7 +18,7 @@ class BombPiece extends Piece {
         if (dist(this.y, this.x, heightController, this.x)<=20 && this.collision == false) {
             if (dist(this.y, this.x, this.y, baseController)<=150) {
                 if (this.id =="Bomb" && isHead === false){
-
+                    //this.playSoundeffect()
                     resetPieces();
                     this.collision = true;
                 }
@@ -31,4 +32,8 @@ class BombPiece extends Piece {
             this.isStacked = true;
         }
     }
+    /*
+    playSoundeffect(){ play(this.soundeffect)}
+
+    */
 }
